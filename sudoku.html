@@ -4,195 +4,199 @@
 		<link rel="stylesheet" type="text/css" href="sudoku.css">
 	</head>
 	<body>
+		<button id="simplePuzzle">Simple</button>
+		<button id="complexPuzzle">Complex</button>
+
 		<div id='container'>
-			<form action="" id="grid">
-				<table>
-					<tr>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g11" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g12" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g13" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g21" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g22" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g23" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g31" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g32" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g33" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g14" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g15" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g16" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g24" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g25" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g26" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g34" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g35" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g36" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g17" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g18" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g19" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g27" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g28" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g29" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g37" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g38" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g39" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
+			<table>
+				<tr>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g11"></td>
+								<td id="g12"></td>
+								<td id="g13"></td>
+							</tr>
+							<tr>
+								<td id="g21"></td>
+								<td id="g22"></td>
+								<td id="g23"></td>
+							</tr>
+							<tr>
+								<td id="g31"></td>
+								<td id="g32"></td>
+								<td id="g33"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g14"></td>
+								<td id="g15"></td>
+								<td id="g16"></td>
+							</tr>
+							<tr>
+								<td id="g24"></td>
+								<td id="g25"></td>
+								<td id="g26"></td>
+							</tr>
+							<tr>
+								<td id="g34"></td>
+								<td id="g35"></td>
+								<td id="g36"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g17"></td>
+								<td id="g18"></td>
+								<td id="g19"></td>
+							</tr>
+							<tr>
+								<td id="g27"></td>
+								<td id="g28"></td>
+								<td id="g29"></td>
+							</tr>
+							<tr>
+								<td id="g37"></td>
+								<td id="g38"></td>
+								<td id="g39"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 
-					<tr>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g41" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g42" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g43" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g51" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g52" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g53" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g61" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g62" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g63" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g44" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g45" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g46" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g54" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g55" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g56" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g64" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g65" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g66" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g47" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g48" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g49" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g57" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g58" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g59" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g67" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g68" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g69" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
+				<tr>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g41"></td>
+								<td id="g42"></td>
+								<td id="g43"></td>
+							</tr>
+							<tr>
+								<td id="g51"></td>
+								<td id="g52"></td>
+								<td id="g53"></td>
+							</tr>
+							<tr>
+								<td id="g61"></td>
+								<td id="g62"></td>
+								<td id="g63"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g44"></td>
+								<td id="g45"></td>
+								<td id="g46"></td>
+							</tr>
+							<tr>
+								<td id="g54"></td>
+								<td id="g55"></td>
+								<td id="g56"></td>
+							</tr>
+							<tr>
+								<td id="g64"></td>
+								<td id="g65"></td>
+								<td id="g66"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g47"></td>
+								<td id="g48"></td>
+								<td id="g49"></td>
+							</tr>
+							<tr>
+								<td id="g57"></td>
+								<td id="g58"></td>
+								<td id="g59"></td>
+							</tr>
+							<tr>
+								<td id="g67"></td>
+								<td id="g68"></td>
+								<td id="g69"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 
-					<tr>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g71" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g72" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g73" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g81" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g82" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g83" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g91" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g92" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g93" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g74" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g75" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g76" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g84" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g85" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g86" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g94" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g95" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g96" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr>
-									<td><input type="text" id="g77" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g78" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g79" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g87" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g88" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g89" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-								<tr>
-									<td><input type="text" id="g97" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g98" class="grid-square" value="" maxlength="1" sze="1"></td>
-									<td><input type="text" id="g99" class="grid-square" value="" maxlength="1" sze="1"></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
+				<tr>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g71"></td>
+								<td id="g72"></td>
+								<td id="g73"></td>
+							</tr>
+							<tr>
+								<td id="g81"></td>
+								<td id="g82"></td>
+								<td id="g83"></td>
+							</tr>
+							<tr>
+								<td id="g91"></td>
+								<td id="g92"></td>
+								<td id="g93"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g74"></td>
+								<td id="g75"></td>
+								<td id="g76"></td>
+							</tr>
+							<tr>
+								<td id="g84"></td>
+								<td id="g85"></td>
+								<td id="g86"></td>
+							</tr>
+							<tr>
+								<td id="g94"></td>
+								<td id="g95"></td>
+								<td id="g96"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g77"></td>
+								<td id="g78"></td>
+								<td id="g79"></td>
+							</tr>
+							<tr>
+								<td id="g87"></td>
+								<td id="g88"></td>
+								<td id="g89"></td>
+							</tr>
+							<tr>
+								<td id="g97"></td>
+								<td id="g98"></td>
+								<td id="g99"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 
-				</table>
+			</table>
 
-			</form>
 			<button id="nextUpdate">Next</button>
 			<button id="finishUpdates">Finish</button>
+			<br>
+			Number of Updates: <span id="numUpdates">0</span>
 		</div>
+
 		<script src="node_modules/jquery/dist/jquery.js"></script>
 		<script src="application.js"></script>
 	</body>
