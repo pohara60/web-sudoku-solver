@@ -18,8 +18,9 @@ $( document ).ready(function() {
                 this.value = null;
             }
 
-            set value(value) {
-                if( value == null) return;
+            set value(entry) {
+                if( entry == null) return;
+                var value = Number(entry);
                 if( value === this.value ) return;
                 if( ! this.value == null ) {
                     alert("Value " + value + "different to value " + this.value + "for Cell[" + this.row + "," + this.col + "]");
@@ -47,10 +48,10 @@ $( document ).ready(function() {
                     this.possible[entry-1] = false;
                     var countTrue = 0;
                     var valueTrue;
-                    for( var entry = 1; entry < 10; entry++) {
-                        if( this.possible[entry-1]) {
+                    for( var e = 1; e < 10; e++) {
+                        if( this.possible[e-1]) {
                             countTrue++;
-                            valueTrue = entry;
+                            valueTrue = e;
                         }
                     }
                     if( countTrue == 1 ) {
@@ -88,8 +89,9 @@ $( document ).ready(function() {
                 this.updatedCells = new Array(0);
             }
 
-            setCell(row, col, value) {
+            setCell(row, col, entry) {
                 var cell = this.cells[row-1][col-1];
+                var value = Number(entry);
                 if( cell.value != value) {
                     cell.value = value;
                     if( ! this.updatedCells.includes( cell )) {
@@ -105,6 +107,16 @@ $( document ).ready(function() {
 
             removeCell( cell, entry ) {
                 if( cell.remove(entry) ) {
+                    this.updatedCells.push( cell );
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+            removeCellList( cell, p ) {
+                if( cell.removeList(p) ) {
                     this.updatedCells.push( cell );
                     return true;
                 }
@@ -192,11 +204,11 @@ $( document ).ready(function() {
 
         var unionPossible = function( cells ) {
             var result = new Array(9);
-            for( var entry = 0; entry < 10; entry++ ) {
-                result[entry] = false;
+            for( var entry = 1; entry < 10; entry++ ) {
+                result[entry-1] = false;
                 for( var index = 0; index < cells.length; index++ ) {
-                    if( cells[index].possible[entry] ) {
-                        result[entry] = true;
+                    if( cells[index].possible[entry-1] ) {
+                        result[entry-1] = true;
                         break;
                     }
                 }
@@ -224,6 +236,19 @@ $( document ).ready(function() {
             return count;
         }
 
+        var subtractPossible = function( p1, p2 ) {
+            var possible = [];
+            for( var index = 0; index < 9; index++ ) {
+                if( p1[index] && !p2[index] ) {
+                    possible[index] = true;
+                }
+                else {
+                    possible[index] = false;
+                }
+            }
+            return possible;
+        }
+
         var findGroups = function( pC, g, sC, f ) {
             var groups = [];
             for( var index = f; index < pC.length; index++ ) {
@@ -233,20 +258,7 @@ $( document ).ready(function() {
                     var possible = unionPossible( newSC );
                     if( countPossible(possible) <= g ) {
                         if( newSC.length === g ) {
-                            var ok = true;
-                            // check remaining cells do not intersect with group
-                            //for( var index2 = 0; index2 < pC.length; index2++ ) {
-                            //    var c2 = pC[index2];
-                            //    if( ! newSC.includes( c2 ) ) {
-                            //        if( intersectPossible( possible, c2.possible ) > 0 ) {
-                            //            ok = false;
-                            //            break;
-                            //        }
-                            ///    }
-                            //}
-                            if( ok ) {
-                                groups.push( newSC );
-                            }
+                            groups.push( newSC );
                         }
                         else {
                             // try adding cells to group
@@ -304,7 +316,43 @@ $( document ).ready(function() {
             }
         }
 
-        var updateCellList = function( cell, cells ) {
+
+        var unknownCells = function( cells ) {
+            var possibleCells = [];
+            for( var index = 0; index < cells.length; index++ ) {
+                var c = cells[index];
+                if( c.value == null) {
+                    possibleCells.push( c );
+                }
+            }
+            return possibleCells;
+        }
+
+        var checkCellList = function( cell, cells ) {
+            for( var entry = 1; entry < 10; entry++ ) {
+                var known = false;
+                var possible = 0;
+                for( var index = 0; index < cells.length; index++ ) {
+                    var c = cells[index];
+                    if( c.value == entry ) {
+                        if( known ) {
+                            alert("Duplicate cell entry for cell["+cell.row+","+cell.col+"]");
+                        }
+                        else {
+                            known = true;
+                        }
+                    }
+                    else if( c.possible[entry-1] ) {
+                        possible++;
+                    }
+                }
+                if( !known && possible == 0 ) {
+                    alert("Impossible entry for cell["+cell.row+","+cell.col+"]");
+                }
+            }
+        }
+
+        var updateCellList = function( cell, cells, checkRow, checkCol ) {
             var updatedCells = [];
             if( ! ( cell.value == null ) ) {
                 // Remove known value from other cells
@@ -316,24 +364,23 @@ $( document ).ready(function() {
                                 // Cell now set, update display
                                 setCell( c.row, c.col, c.value );
                             }
-                            updatedCells.push(c);
+                            if( ! updatedCells.includes(c)) {
+                                updatedCells.push(c);
+                            }
                         }
                     }
                 }
-                // Check cells for groups
-                // Number of possible values is 9 less number known cells
-                var numPossible = 9;
-                var possibleCells = [];
-                for( var index = 0; index < cells.length; index++ ) {
-                    var c = cells[index];
-                    if( ! (c.value == null) ) {
-                        numPossible--;
-                    }
-                    else {
-                        possibleCells.push( c );
-                    }
-                }
-                // Check for groups of 2 to numPossible-1 cells
+            }
+
+            // Check cells for groups
+            // Number of possible values is 9 less number known cells
+            var possibleCells = unknownCells( cells );
+            var numPossible = possibleCells.length;
+
+            // Check for groups of 2 to numPossible-1 cells
+            var update = true;
+            while( update ) {
+                update = false;
                 for( var gl = 2; gl < numPossible; gl++ ) {
                     var groups = findGroups( possibleCells, gl, [], 0 );
                     for( var gi = 0; gi < groups.length; gi++ ) {
@@ -344,6 +391,7 @@ $( document ).ready(function() {
                             var c = possibleCells[i];
                             if( ! group.includes( c ) ) {
                                 if( c.removeList( possible ) ) {
+                                    update = true;
                                     if( ! updatedCells.includes(c)) {
                                         updatedCells.push(c);
                                     }
@@ -352,8 +400,82 @@ $( document ).ready(function() {
                         }
                     }
                 }
-                
             }
+
+            // Check for rows or columns that must contain entry, clear from rest of row or column
+            if( checkRow ) {
+                for( row = 0; row < 3; row++) {
+                    var cells3 = [];
+                    for( col = 0; col < 3; col++) {
+                        cells3.push( cells[row*3+col]);
+                    }
+                    var cells6 = cells.slice();
+                    for( i = 0; i <cells3.length; i++ ) {
+                        var index = cells6.indexOf(cells3[i]);
+                        cells6.splice(index, 1);
+                    }
+                    //var unknownCells3 = unknownCells( cells3 );
+                    //var unknownCells6 = unknownCells( cells6 );
+                    //var possible3 = unionPossible( unknownCells3 );
+                    //var possible6 = unionPossible(unknownCells6);
+                    var possible3 = unionPossible(cells3);
+                    var possible6 = unionPossible(cells6);
+                    var unique3 = subtractPossible(possible3, possible6);
+                    if( countPossible(unique3) > 0) {
+                        // The unique3 possible values can be removed from the row
+                        var r = cells3[0].row;
+                        for( var c = 1; c < 10; c++) {
+                            var cell = theGrid.cells[r-1][c-1];
+                            if( cell.value == null &&
+                                !cells3.includes(cell)) {
+                                if( theGrid.removeCellList(cell,unique3)) {
+                                    if( ! updatedCells.includes(c)) {
+                                        updatedCells.push(cell);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if( checkCol ) {
+                for( col = 0; col < 3; col++) {
+                    var cells3 = [];
+                    for( row = 0; row < 3; row++) {
+                        cells3.push( cells[row*3+col]);
+                    }
+                    var cells6 = cells.slice();
+                    for( i = 0; i <cells3.length; i++ ) {
+                        var index = cells6.indexOf(cells3[i]);
+                        cells6.splice(index, 1);
+                    }
+                    //var unknownCells3 = unknownCells( cells3 );
+                    //var unknownCells6 = unknownCells( cells6 );
+                    //var possible3 = unionPossible( unknownCells3 );
+                    //var possible6 = unionPossible(unknownCells6);
+                    var possible3 = unionPossible(cells3);
+                    var possible6 = unionPossible(cells6);
+                    var unique3 = subtractPossible(possible3, possible6);
+                    if( countPossible(unique3) > 0) {
+                        // The unique3 possible values can be removed from the col
+                        var c = cells3[0].col;
+                        for( var r = 1; r < 10; r++) {
+                            var cell = theGrid.cells[r-1][c-1];
+                            if( cell.value == null &&
+                                !cells3.includes(cell)) {
+                                if( theGrid.removeCellList(cell,unique3)) {
+                                    if( ! updatedCells.includes(c)) {
+                                        updatedCells.push(cell);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            checkCellList( cell, cells );
+
             return updatedCells;
         }
 
@@ -366,7 +488,7 @@ $( document ).ready(function() {
                     cells.push( theGrid.cells[r-1][c-1] );
                 }
             }
-            return updateCellList( cell, cells );
+            return updateCellList( cell, cells, true, true );
         }
 
         var updateCellRow = function( cell ) {
@@ -375,7 +497,7 @@ $( document ).ready(function() {
             for( var c = 1; c < 10; c++) {
                 cells.push( theGrid.cells[r-1][c-1] );
             }
-            return updateCellList( cell, cells );
+            return updateCellList( cell, cells, true, false );
         }
 
         var updateCellColumn = function( cell ) {
@@ -384,14 +506,11 @@ $( document ).ready(function() {
             for( var r = 1; r < 10; r++) {
                 cells.push( theGrid.cells[r-1][c-1] );
             }
-            return updateCellList( cell, cells );
+            return updateCellList( cell, cells, false, true );
         }
 
-        var nextUpdate = function() {
+        var updateCell = function( cell ) {
             clearFormatting();
-
-            var cell = theGrid.nextUpdate();
-            if( cell == undefined ) return false;
 
             var affected = [];
             affected = affected.concat( updateCellSquare( cell ) );
@@ -414,16 +533,47 @@ $( document ).ready(function() {
             return true;
         }
 
-        var finishUpdates = function() {
-            while( nextUpdate() ) {
-                ;
+        var nextUpdate = function() {
+
+            var cell = theGrid.nextUpdate();
+            if( cell == undefined ) return false;
+
+            return updateCell( cell );
+        }
+
+        var finishUpdates = function( limit ) {
+            var steps = 10000000;
+            if( limit != null && limit > 0 ) steps = limit;
+            while( steps > 0 && nextUpdate() ) {
+                steps--;
             }
+            clearFormatting();
         } 
+
+        var lastRetry = 80;
+        var retryUpdate = function() {
+            var previousLast = lastRetry;
+            var update = false;
+            while( !update ) {
+                lastRetry++;
+                if( lastRetry >= 81 ) lastRetry = 0;
+                if( lastRetry == previousLast ) break;
+                var col = (lastRetry) % 9;
+                var row = (lastRetry - col)  / 9;
+                var cell = theGrid.cells[row][col];
+                update = updateCell( cell );
+            }
+            if( !update ) {
+                // Last cell was not updated so clear formatting
+                clearFormatting();
+            }
+        }
 
         return {
             initGrid: initGrid,
             nextUpdate: nextUpdate,
             finishUpdates: finishUpdates,
+            retryUpdate: retryUpdate,
             testFindGroups: testFindGroups
         };
     })();
@@ -432,19 +582,36 @@ $( document ).ready(function() {
 
         var simplePuzzle = function () {
             var puzzle = [ ".....123.", "123..8.4.", "8.4..765.", "765......", ".........", "......123", ".123..8.4", ".8.4..765", ".765....." ];
-            var answer = [ "657941238", "123658947", "894237651", "765123489", "231894576", "948765123", "512376894", "389412765", "476589312" ];
             sudoku.initGrid( puzzle );
         }
 
         var complexPuzzle = function () {
             var puzzle = [ "7...48...", ".5.....24", ".....9..1", ".2.....5.", "3.9.5...6", "...47..3.", "....1..4.", "18....69.", "2..7....." ];
-            var answer = [ "731248965", "958167324", "642539781", "427693158", "319852476", "865471239", "573916842", "184325697", "296784513" ];
             sudoku.initGrid( puzzle );
         }
 
+        var nextPuzzle = 0;
+        var otherPuzzle = function () {
+            var puzzles = [
+                //[ ".........", ".........", ".........", ".........", ".........", ".........", ".........", ".........", "........." ],
+                [ "7......4.", ".....827.", ".4.9.5...", "8.9..3...", "5.3...6.2", "...1..3.8", "...5.7.2.", ".564.....", ".9......3" ],
+                [ "...37....", "26.......", ".3.8...47", "9.3..7.1.", ".4.....3.", ".7.9..4.6", "51...2.7.", ".......21", "....18..." ],
+                [ "..4.5..2.", "3....97.6", "....78..3", ".15...8..", ".......5.", ".62...3..", "....17..5", "1....64.2", "..3.9..8." ],
+                [ "...43....", "..9.2.8..", ".....7.29", ".5....1.3", "..62.57..", "8.1....6.", "14.9.....", "..2.6.9..", "....43..." ],
+            ];
+            if( nextPuzzle >= puzzles.length ) {
+                nextPuzzle = 0;
+            }
+            sudoku.initGrid( puzzles[nextPuzzle] );
+            nextPuzzle++;
+        }
+
+
+
         return {
             simplePuzzle: simplePuzzle,
-            complexPuzzle: complexPuzzle
+            complexPuzzle: complexPuzzle,
+            otherPuzzle: otherPuzzle
         };
     })();
 
@@ -456,11 +623,19 @@ $( document ).ready(function() {
     $( '#complexPuzzle').on('click', function() {
         puzzles.complexPuzzle();
     });
+    $( '#otherPuzzle').on('click', function() {
+        puzzles.otherPuzzle();
+    });
     $( '#nextUpdate').on('click', function() {
         sudoku.nextUpdate();
     });
+    $( '#retryUpdate').on('click', function() {
+        sudoku.retryUpdate();
+    });
     $( '#finishUpdates').on('click', function() {
-        sudoku.finishUpdates();
+        var limitString = $( "#limitUpdates" ).val();
+        var limit = Number( limitString );
+        sudoku.finishUpdates( limit );
     });
     $( '#testFindGroups').on('click', function() {
         sudoku.testFindGroups();
