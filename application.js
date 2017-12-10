@@ -6,15 +6,83 @@
 $( document ).ready(function() {
     var sudoku = (function() {
 
+        var debug = false;
+        var theGrid;
+        var updateCount;
+
+        var floor3 = function( r ) {
+            if( r >= 1 && r <= 3) {
+                return 1;
+            }
+            if( r >= 4 && r <= 6) {
+                return 4;
+            }
+            if( r >= 7 && r <= 9) {
+                return 7;
+            }
+            alert("Bad row/col number");
+        }
+
         class Cell {
+
+            initPossible() {
+                if( this.possible == null ) {
+                    this.possible = new Array(9);
+                    for( var entry = 1; entry < 10; entry++) {
+                        this.possible[entry-1] = true;
+                    }
+                    // Do not update Possible because breaks algorithm
+                    //updatePossible();
+                    if(debug) console.log("initPossible: "+this.toString());
+                }
+            }
+
+            updatePossible() {
+                this.initPossible();
+
+                // Remove known values from square, row, col
+                var update = false;
+                var row = floor3( this.row );
+                var col = floor3( this.col );
+                for( var r = row; r < row+3; r++) {
+                    for( var c = col; c < col+3; c++) {
+                        if( ! (r === this.row && c === this.col )) {
+                            var cell = theGrid.cells[r-1][c-1];
+                            var value = cell.value;
+                            if( value != null ) {
+                                if( this.remove(value) ) update = true;
+                            }
+                        }
+                    }
+                }
+                var r = this.row;
+                for( var c = 1; c < 10; c++) {
+                    if( ! (r === this.row && c === this.col )) {
+                        var cell = theGrid.cells[r-1][c-1];
+                        var value = cell.value;
+                        if( value != null ) {
+                            if( this.remove(value) ) update = true;
+                        }
+                    }
+                }
+                var c = this.col;
+                for( var r = 1; r < 10; r++) {
+                    if( ! (r === this.row && c === this.col )) {
+                        var cell = theGrid.cells[r-1][c-1];
+                        var value = cell.value;
+                        if( value != null ) {
+                            if( this.remove(value) ) update = true;
+                        }
+                    }
+                }
+                if(debug) console.log("updatePossible: "+this.toString());
+                return update;
+            }
 
             constructor(row, col) {
                 this.row = row;
                 this.col = col;
-                this.possible = new Array(9);
-                for( var entry = 1; entry < 10; entry++) {
-                    this.possible[entry-1] = true;
-                }
+                this.possible = null;
                 this.value = null;
             }
 
@@ -25,6 +93,7 @@ $( document ).ready(function() {
                 if( ! this.value == null ) {
                     alert("Value " + value + "different to value " + this.value + "for Cell[" + this.row + "," + this.col + "]");
                 }
+                this.initPossible();
                 for( var entry = 1; entry < 10; entry++) {
                     if( entry === value ) {
                         if( !this.possible[entry-1]) {
@@ -37,6 +106,8 @@ $( document ).ready(function() {
                     }
                 }
                 this._value = value;
+                theGrid.unknownCells--;
+                if(debug) console.log("set value: "+this);
             }
 
             get value() {
@@ -44,6 +115,7 @@ $( document ).ready(function() {
             }
 
             remove( entry ) {
+                this.initPossible();
                 if( this.possible[entry-1] ) {
                     this.possible[entry-1] = false;
                     var countTrue = 0;
@@ -57,6 +129,7 @@ $( document ).ready(function() {
                     if( countTrue == 1 ) {
                         this.value = valueTrue;
                     }
+                    if(debug) console.log("remove "+entry+": "+this);
                     return true;
                 }
                 else {
@@ -66,6 +139,7 @@ $( document ).ready(function() {
 
             removeList( p ) {
                 var removed = false;
+                this.initPossible();
                 for( var entry = 1; entry < 10; entry++ ) {
                     if( p[entry-1] ) {
                         if( this.remove( entry ) ) {
@@ -74,6 +148,21 @@ $( document ).ready(function() {
                     }
                 }
                 return removed;
+            }
+
+            toString() {
+                var text = "["+this.row+","+this.col+"] = ";
+                if( this.possible == null ) {
+                    text = text + "unknown";
+                }
+                else {
+                    for( var entry = 1; entry < 10; entry++ ) {
+                        if( this.possible[entry-1] ) {
+                            text = text + entry;
+                        }
+                    }
+                }
+                return text;
             }
         }
 
@@ -87,6 +176,7 @@ $( document ).ready(function() {
                     }
                 }
                 this.updatedCells = new Array(0);
+                this.unknownCells = 81;
             }
 
             setCell(row, col, entry) {
@@ -101,6 +191,8 @@ $( document ).ready(function() {
             }
 
             nextUpdate() {
+                if( this.unknownCells === 0 ) return undefined;
+
                 var cell = this.updatedCells.shift();
                 return cell;
             }
@@ -126,9 +218,6 @@ $( document ).ready(function() {
             }
 
         }
-
-        var theGrid;
-        var updateCount;
 
         var clearFormatting = function() {
             // Undo formatting
@@ -159,20 +248,21 @@ $( document ).ready(function() {
         var displayCell = function( cell ) {
             var id = cellId( cell.row, cell.col );
             if( cell.value == null ) {
-                // Show possibles
                 var text = "";
-                for( var entry = 1; entry < 10; entry++) {
-                    if( cell.possible[entry-1]) {
-                        text = text + entry;
-                    }
-                    else {
-                        text = text + "&nbsp;";
-                    }
-                    if( entry === 3 || entry === 6 ) {
-                        text = text + "<br>";
+                if( cell.possible != null ) {
+                    // Show possibles
+                    for( var entry = 1; entry < 10; entry++) {
+                        if( cell.possible[entry-1]) {
+                            text = text + entry;
+                        }
+                        else {
+                            text = text + "&nbsp;";
+                        }
+                        if( entry === 3 || entry === 6 ) {
+                            text = text + "<br>";
+                        }
                     }
                 }
-                //$( id ).val( text );
                 $( id ).html( '<p class="possible">'+text+'</p>' );
             }
             else {
@@ -189,21 +279,11 @@ $( document ).ready(function() {
             displayCell( theGrid.cells[row-1][col-1] );
         }
 
-        var mod3 = function( r ) {
-            if( r >= 1 && r <= 3) {
-                return 1;
-            }
-            if( r >= 4 && r <= 6) {
-                return 4;
-            }
-            if( r >= 7 && r <= 9) {
-                return 7;
-            }
-            alert("Bad row/col number");
-        }
-
         var unionPossible = function( cells ) {
             var result = new Array(9);
+            for( var index = 0; index < cells.length; index++ ) {
+                cells[index].initPossible();
+            }
             for( var entry = 1; entry < 10; entry++ ) {
                 result[entry-1] = false;
                 for( var index = 0; index < cells.length; index++ ) {
@@ -253,6 +333,7 @@ $( document ).ready(function() {
             var groups = [];
             for( var index = f; index < pC.length; index++ ) {
                 var c = pC[index];
+                c.initPossible();
                 if( ! sC.includes( c ) && countPossible(c.possible) <= g ) {
                     var newSC = sC.concat( c );
                     var possible = unionPossible( newSC );
@@ -334,6 +415,7 @@ $( document ).ready(function() {
                 var possible = 0;
                 for( var index = 0; index < cells.length; index++ ) {
                     var c = cells[index];
+                    c.initPossible();
                     if( c.value == entry ) {
                         if( known ) {
                             alert("Duplicate cell entry for cell["+cell.row+","+cell.col+"]");
@@ -414,10 +496,6 @@ $( document ).ready(function() {
                         var index = cells6.indexOf(cells3[i]);
                         cells6.splice(index, 1);
                     }
-                    //var unknownCells3 = unknownCells( cells3 );
-                    //var unknownCells6 = unknownCells( cells6 );
-                    //var possible3 = unionPossible( unknownCells3 );
-                    //var possible6 = unionPossible(unknownCells6);
                     var possible3 = unionPossible(cells3);
                     var possible6 = unionPossible(cells6);
                     var unique3 = subtractPossible(possible3, possible6);
@@ -449,10 +527,6 @@ $( document ).ready(function() {
                         var index = cells6.indexOf(cells3[i]);
                         cells6.splice(index, 1);
                     }
-                    //var unknownCells3 = unknownCells( cells3 );
-                    //var unknownCells6 = unknownCells( cells6 );
-                    //var possible3 = unionPossible( unknownCells3 );
-                    //var possible6 = unionPossible(unknownCells6);
                     var possible3 = unionPossible(cells3);
                     var possible6 = unionPossible(cells6);
                     var unique3 = subtractPossible(possible3, possible6);
@@ -481,8 +555,8 @@ $( document ).ready(function() {
 
         var updateCellSquare = function( cell ) {
             var cells = [];
-            var row = mod3( cell.row );
-            var col = mod3( cell.col );
+            var row = floor3( cell.row );
+            var col = floor3( cell.col );
             for( var r = row; r < row+3; r++) {
                 for( var c = col; c < col+3; c++) {
                     cells.push( theGrid.cells[r-1][c-1] );
@@ -512,6 +586,12 @@ $( document ).ready(function() {
         var updateCell = function( cell ) {
             clearFormatting();
 
+            var update = false;
+            if( cell.value == null ) {
+                // Possible values may have changed due to other updates
+                update = cell.updatePossible();
+            }
+
             var affected = [];
             affected = affected.concat( updateCellSquare( cell ) );
             affected = affected.concat( updateCellRow( cell ) );
@@ -520,6 +600,7 @@ $( document ).ready(function() {
             // Format update
             var id = cellId( cell.row, cell.col );
             $( id ).addClass("updated");
+            if( update ) displayCell( cell );
             for( var index = 0; index < affected.length; index++ ) {
                 cell = affected[index];
                 id = cellId( cell.row, cell.col );
