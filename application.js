@@ -87,7 +87,14 @@ $( document ).ready(function() {
             }
 
             set value(entry) {
-                if( entry == null) return;
+                if( entry == null) {
+                    if( this._value != null ) {
+                        theGrid.unknownCells++;
+                        this._value = null;
+                    }
+                    return;
+                }
+
                 var value = Number(entry);
                 if( value === this.value ) return;
                 if( ! this.value == null ) {
@@ -150,6 +157,35 @@ $( document ).ready(function() {
                 return removed;
             }
 
+
+            toggle( entry ) {
+                // Do not initPossible because it sets all entries to possible
+                if( this.possible == null ) {
+                    this.possible = new Array(9);
+                }
+                // If set then unset
+                if( this.value != null ) {
+                    this.value = null;
+                }
+                if( this.possible[entry-1] ) {
+                    this.remove( entry );
+                }
+                else {
+                    this.possible[entry-1] = true;
+                    var countTrue = 0;
+                    for( var e = 1; e < 10; e++) {
+                        if( this.possible[e-1]) {
+                            countTrue++;
+                        }
+                    }
+                    if( countTrue == 1 ) {
+                        this.value = entry;
+                    }
+                }
+                if(debug) console.log("toggle "+entry+": "+this);
+                return true;
+            }
+
             toString() {
                 var text = "["+this.row+","+this.col+"] = ";
                 if( this.possible == null ) {
@@ -199,7 +235,9 @@ $( document ).ready(function() {
 
             removeCell( cell, entry ) {
                 if( cell.remove(entry) ) {
-                    this.updatedCells.push( cell );
+                    if( ! this.updatedCells.includes( cell )) {
+                        this.updatedCells.push( cell );
+                    }
                     return true;
                 }
                 else {
@@ -217,12 +255,25 @@ $( document ).ready(function() {
                 }
             }
 
+            toggle( cell, entry ) {
+                if( cell.toggle(entry) ) {
+                    if( ! this.updatedCells.includes( cell )) {
+                        this.updatedCells.push( cell );
+                    }
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
         }
 
         var clearFormatting = function() {
             // Undo formatting
             $( ".updated").removeClass("updated");
             $( ".affected").removeClass("affected");
+            $( ".highlight").removeClass("highlight");
+            $( ".error").removeClass("error");
         }
 
         var initGrid = function( puzzle ) {
@@ -410,28 +461,42 @@ $( document ).ready(function() {
         }
 
         var checkCellList = function( cell, cells ) {
+            var errors = [];
             for( var entry = 1; entry < 10; entry++ ) {
-                var known = false;
+                var knownCells = [];
                 var possible = 0;
                 for( var index = 0; index < cells.length; index++ ) {
                     var c = cells[index];
                     c.initPossible();
                     if( c.value == entry ) {
-                        if( known ) {
-                            alert("Duplicate cell entry for cell["+cell.row+","+cell.col+"]");
+                        if( knownCells.length > 0 ) {
+                            console.log("Duplicate cell entry for cell["+cell.row+","+cell.col+"]");
+                            knownCells.push(c);
                         }
                         else {
-                            known = true;
+                            knownCells.push(c);
                         }
                     }
                     else if( c.possible[entry-1] ) {
                         possible++;
                     }
                 }
-                if( !known && possible == 0 ) {
-                    alert("Impossible entry for cell["+cell.row+","+cell.col+"]");
+                if( knownCells == null ) {
+                    if( possible == 0 ) {
+                        console.log("Impossible entry for cell["+cell.row+","+cell.col+"]");
+                        errors = cells;
+                        break;
+                    }
+                }
+                else if( knownCells.length > 1 ) {
+                    for( var i = 0; i < knownCells.length; i++ ) {
+                        if( !errors.includes(knownCells[i])) {
+                            errors.push(knownCells[i]);
+                        }
+                    }
                 }
             }
+            return errors;
         }
 
         var updateCellList = function( cell, cells, checkRow, checkCol ) {
@@ -548,9 +613,12 @@ $( document ).ready(function() {
                 }
             }
 
-            checkCellList( cell, cells );
+            var errors = checkCellList( cell, cells );
 
-            return updatedCells;
+            return {
+                updates: updatedCells,
+                errors: errors
+            }
         }
 
         var updateCellSquare = function( cell ) {
@@ -583,6 +651,19 @@ $( document ).ready(function() {
             return updateCellList( cell, cells, false, true );
         }
 
+        var unionUpdates = function( union, updates ) {
+            if( union == null ) {
+                union = {
+                    updates: [],
+                    errors: []
+                }
+            }
+            return {
+                updates: union.updates.concat( updates.updates ),
+                errors: union.errors.concat( updates.errors )
+            }
+        }
+
         var updateCell = function( cell ) {
             clearFormatting();
 
@@ -592,24 +673,32 @@ $( document ).ready(function() {
                 update = cell.updatePossible();
             }
 
-            var affected = [];
-            affected = affected.concat( updateCellSquare( cell ) );
-            affected = affected.concat( updateCellRow( cell ) );
-            affected = affected.concat( updateCellColumn( cell ) );
+            var union = null;
+            union = unionUpdates( union, updateCellSquare( cell ) );
+            union = unionUpdates( union, updateCellRow( cell ) );
+            union = unionUpdates( union, updateCellColumn( cell ) );
 
             // Format update
             var id = cellId( cell.row, cell.col );
             $( id ).addClass("updated");
             if( update ) displayCell( cell );
-            for( var index = 0; index < affected.length; index++ ) {
-                cell = affected[index];
+            for( var index = 0; index < union.updates.length; index++ ) {
+                cell = union.updates[index];
                 id = cellId( cell.row, cell.col );
                 $( id ).addClass("affected");
+                displayCell( cell );
+            }
+            for( var index = 0; index < union.errors.length; index++ ) {
+                cell = union.errors[index];
+                id = cellId( cell.row, cell.col );
+                $( id ).addClass("error");
                 displayCell( cell );
             }
 
             updateCount++;
             $( '#numUpdates').text( updateCount );
+
+            if( union.errors.length > 0 ) return undefined;
 
             return true;
         }
@@ -625,10 +714,13 @@ $( document ).ready(function() {
         var finishUpdates = function( limit ) {
             var steps = 10000000;
             if( limit != null && limit > 0 ) steps = limit;
-            while( steps > 0 && nextUpdate() ) {
+            var status;
+            while( steps > 0 ) {
+                status = nextUpdate();
+                if( !status ) break;
                 steps--;
             }
-            clearFormatting();
+            if( status != undefined ) clearFormatting();
         } 
 
         var lastRetry = 80;
@@ -650,12 +742,81 @@ $( document ).ready(function() {
             }
         }
 
+        var highlight = function(e) {
+            var target = e.target;
+            var td = target.closest("td");
+            clearFormatting();
+            $(td).addClass("highlight");
+            e.stopPropagation();
+        }
+        var keydown = function(e) {
+            e.stopPropagation();
+            var target = e.target;
+            var td = target.closest("td");
+            var id = $( td ).attr("id");
+            var row = id.substr(1,1);
+            var col = id.substr(2,1);
+            var cell = theGrid.cells[row-1][col-1];
+            var code = e.which;
+            // Navigation
+            if( code >= 37 && code <= 40 ) {
+                if( code == 37 ) {
+                    // Left arrow
+                    col--;
+                    if( col == 0 ) {
+                        col = 9;
+                        row--;
+                        if( row == 0 ) row = 9;
+                    }
+                }
+                if( code == 38 ) {
+                    // Up arrow
+                    row--;
+                    if( row == 0 ) {
+                        row = 9;
+                        col--;
+                        if( col == 0 ) col = 9;
+                    }
+                }
+                if( code == 39 ) {
+                    // Right arrow
+                    col++;
+                    if( col == 10 ) {
+                        col = 1;
+                        row++;
+                        if( row == 10 ) row = 1;
+                    }
+                }
+                if( code == 40 ) {
+                    // Down arrow
+                    row++;
+                    if( row == 10 ) {
+                        row = 1;
+                        col++;
+                        if( col == 10 ) col = 1;
+                    }
+                }
+                var id = cellId( row, col );
+                $( id ).focus();
+            }
+            else {
+                var entry = code - 48;
+                if( entry >=1 && entry <= 9 ) {
+                    if( theGrid.toggle( cell, entry ) ) {
+                        displayCell(cell);
+                    }
+                }
+            }
+        }
+
         return {
             initGrid: initGrid,
             nextUpdate: nextUpdate,
             finishUpdates: finishUpdates,
             retryUpdate: retryUpdate,
-            testFindGroups: testFindGroups
+            testFindGroups: testFindGroups,
+            highlight: highlight,
+            keydown: keydown
         };
     })();
  
@@ -697,6 +858,19 @@ $( document ).ready(function() {
     })();
 
     puzzles.simplePuzzle();
+
+    $("table.fixed td").on('click', function(e) {
+        sudoku.highlight(e);
+    });
+    $("table.fixed td").on('focus', function(e) {
+        sudoku.highlight(e);
+    });
+    $("table.fixed td").on('keydown', function(e) {
+        sudoku.keydown(e);
+    });
+    $("table.fixed p").on('keydown', function(e) {
+        sudoku.keydown(e);
+    });
 
     $( '#simplePuzzle').on('click', function() {
         puzzles.simplePuzzle();

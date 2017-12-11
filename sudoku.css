@@ -19,10 +19,16 @@ td {
 }
 
 td.updated {
-    background-color:#FF0000;
+    background-color:#00FF00;
 }
 td.affected {
-    background-color:#00FF00;
+    background-color:#007F00;
+}
+td.error {
+    background-color:#FF0000;
+}
+td.highlight {
+    background-color:#33FFFF;
 }
 
 p {
