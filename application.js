@@ -23,6 +23,64 @@ $( document ).ready(function() {
             alert("Bad row/col number");
         }
 
+        class Cage {
+            constructor(total, locations) {
+                this.total = total;
+                this.cells = [];
+                locations.forEach(element => {
+                    this.cells.push(theGrid.cells[element[0]-1][element[1]-1]);
+                });
+                if (theGrid.cages == null) {
+                    theGrid.cages = [];
+                }
+                theGrid.cages.push(this);
+            }
+
+            static validateCages(){
+                // @ts-ignore
+                let error = false;
+                let grandTotal = 0;
+                let numCells = 0;
+                let allCells = [];
+                let cages = theGrid.cages;
+                for (let i = 0; i < cages.length; i++) {
+                    for (let j = i+1; j < cages.length; j++) {
+                        // Do the cell cages overlap?
+                        // @ts-ignore
+                        let overlap = false;
+                        for (let c1 of cages[i].cells) {
+                            if (cages[j].cells.includes(c1)) {
+                                alert("Cell " + c1 + " appears in more than one cage!");
+                                error = true;
+                            }
+                        }
+                    }    
+                    // Sum totals and number of cells
+                    grandTotal += cages[i].total;
+                    numCells += cages[i].cells.length;
+                    allCells += cages[i].cells;
+                }
+                if (grandTotal != 45*9) {
+                    // @ts-ignore
+                    alert("Cages total is " + grandTotal + ", should be ", 45*9 );
+                    error = true;
+                }
+                if (numCells != 81) {
+                    let missingCells = "";
+                    for (let r = 1; r < 10; r++) {
+                        for (let c = 1; c < 10; c++) {
+                            if (! allCells.includes(theGrid.cells[r-1][c-1])) {
+                                missingCells += "["+r+","+c+"]";
+                            }
+                        }
+                    }
+                    alert("Cages only include " + numCells + " cells, should be 81\n"+
+                          "Missing cells: " + missingCells);
+                    error = true;
+                }
+            }
+        }
+
         class Cell {
 
             initPossible() {
@@ -357,6 +415,7 @@ $( document ).ready(function() {
             return count;
         }
 
+        // @ts-ignore
         var intersectPossible = function( p1, p2 ) {
             var count = 0;
             for( let index = 0; index < 10; index++ ) {
@@ -809,6 +868,22 @@ $( document ).ready(function() {
             }
         }
 
+        var initKiller = function (killer) {
+
+            theGrid = new Grid();
+
+            for (let cage of killer) {
+                // @ts-ignore
+                newCage = new Cage(cage.total, cage.cells);
+            }
+
+            Cage.validateCages();
+
+            updateCount = 0;
+            $('#numUpdates').text(updateCount);
+            clearFormatting();
+        };
+
         return {
             initGrid: initGrid,
             nextUpdate: nextUpdate,
@@ -816,7 +891,8 @@ $( document ).ready(function() {
             retryUpdate: retryUpdate,
             testFindGroups: testFindGroups,
             highlight: highlight,
-            keydown: keydown
+            keydown: keydown,
+            initKiller: initKiller,
         };
     })();
  
@@ -843,14 +919,54 @@ $( document ).ready(function() {
             nextPuzzle++;
         }
 
-
-
         return {
             getPuzzle: getPuzzle
         };
-    })();
+    });
 
-    puzzles.getPuzzle();
+    var killers = (function () {
+
+        var nextKiller = 0;
+        var getKiller = function () {
+            var Killers = [[
+                { total: 13, cells: [[1, 1],[2, 1]]},
+                { total:  8, cells: [[1, 2], [2, 2], [2,3]] },
+                { total: 15, cells: [[1, 3], [1, 4]] },
+                { total: 14, cells: [[1, 5], [1, 6], [1, 7]] },
+                { total:  8, cells: [[1, 8], [1, 9]] },
+                { total: 39, cells: [[2, 4], [2, 5], [3, 4], [3, 5], [4, 5], [5, 5]] },
+                { total: 21, cells: [[2, 6], [2, 7], [3, 6], [3, 7]] },
+                { total: 23, cells: [[2, 8], [2, 9], [3, 8], [3, 9], [4, 8], [4, 9]] },
+                { total: 12, cells: [[3, 1], [3, 2]] },
+                { total: 10, cells: [[3, 3], [4, 3]] },
+                { total: 22, cells: [[4, 1], [4, 2], [5, 1], [5, 2]] },
+                { total: 10, cells: [[4, 4], [5, 3], [5, 4]] },
+                { total: 22, cells: [[4, 6], [5, 6], [6, 5], [6, 6]] },
+                { total: 29, cells: [[4, 7], [5, 7], [5, 8], [5, 9], [6, 9], [7, 9]] },
+                { total: 14, cells: [[6, 1], [6, 2], [7, 1], [8, 1]] },
+                { total:  8, cells: [[6, 3], [6, 4]] },
+                { total: 22, cells: [[6, 7], [6, 8], [7, 8]] },
+                { total: 16, cells: [[7, 2], [8, 2]] },
+                { total: 18, cells: [[7, 3], [7, 4], [8, 4]] },
+                { total: 23, cells: [[7, 5], [7, 6], [7, 7], [8, 5], [9, 5], [9, 6]] },
+                { total: 23, cells: [[8, 3], [9, 1], [9, 2], [9, 3], [9, 4]] },
+                { total:  9, cells: [[8, 6], [8, 7], [9, 7]] },
+                { total: 26, cells: [[8, 8], [8, 8], [9, 8], [9, 9]] },
+            ]];
+            if (nextKiller >= Killers.length) {
+                nextKiller = 0;
+            }
+            sudoku.initKiller(Killers[nextKiller]);
+            nextKiller++;
+        }
+
+        return {
+            getKiller: getKiller
+        };
+    });
+
+    // puzzles.getPuzzle();
+    killers().getKiller();
 
     $("table.fixed td").on('click', function(e) {
         sudoku.highlight(e);
@@ -866,6 +982,7 @@ $( document ).ready(function() {
     });
 
     $( '#getPuzzle').on('click', function() {
+        // @ts-ignore
         puzzles.getPuzzle();
     });
     $( '#nextUpdate').on('click', function() {
