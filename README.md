@@ -1,5 +1,8 @@
 # web-sudoku-solver
 
+## Branch killer
+Enhance for Killer Sudoku
+
 ## Class Cell
 |Method|Description|
 |----|-----------|
