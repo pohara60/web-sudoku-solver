@@ -6,7 +6,7 @@
 $( document ).ready(function() {
     var sudoku = (function() {
 
-        var debug = false;
+        var debug = true;
         var theGrid;
         var updateCount;
 
@@ -24,16 +24,46 @@ $( document ).ready(function() {
         }
 
         class Cage {
-            constructor(total, locations) {
+            constructor(total, locations, virtual = false, nodups = true) {
                 this.total = total;
                 this.cells = [];
+                this.virtual = virtual;
+                this.nodups = nodups;
                 locations.forEach(element => {
-                    this.cells.push(theGrid.cells[element[0]-1][element[1]-1]);
+                    let cell = theGrid.cells[element[0] - 1][element[1] - 1];
+                    this.cells.push(cell);
+                    if (!virtual) {
+                        cell.cage = this;
+                    }
+                    if (!cell.cages) {
+                        cell.cages = [this];
+                    } else {
+                        cell.cages.push(this);
+                    }
                 });
-                if (theGrid.cages == null) {
-                    theGrid.cages = [];
+                if (!virtual) {
+                    if (theGrid.cages == null) {
+                        theGrid.cages = [this];
+                    } else {
+                        theGrid.cages.push(this);
+                    }
                 }
-                theGrid.cages.push(this);
+            }
+
+            static colourCages(){
+                for (let cage of theGrid.cages) {
+                    let adjacentCells = [];
+                    for (let cell of cage.cells) {
+                        adjacentCells.push(...theGrid.adjacentCells(cell));
+                    }
+                    adjacentCells = adjacentCells.filter(n => !cage.cells.includes(n));
+                    let adjacentCages = adjacentCells.map(x => x.cage);
+                    let adjacentColours = adjacentCages.map(c => c.colour);
+                    cage.colour = 1;
+                    while (adjacentColours.includes(cage.colour)) {
+                        cage.colour ++;
+                    }
+                }
             }
 
             static validateCages(){
@@ -44,10 +74,18 @@ $( document ).ready(function() {
                 let allCells = [];
                 let cages = theGrid.cages;
                 for (let i = 0; i < cages.length; i++) {
+                    // Does the cage have duplicate cells
+                    let cage = cages[i];
+                    let cells = cage.cells;
+                    for (let i = 0; i < cells.length; i++){
+                        for (let j = i+1; j < cells.length; j++) {
+                            if (cells[i] === cells[j]) {
+                                alert("Cell " + cells[i] + " is duplicated in cage!");
+                            }
+                        }
+                    }
+                    // Do the cell cages overlap?
                     for (let j = i+1; j < cages.length; j++) {
-                        // Do the cell cages overlap?
-                        // @ts-ignore
-                        let overlap = false;
                         for (let c1 of cages[i].cells) {
                             if (cages[j].cells.includes(c1)) {
                                 alert("Cell " + c1 + " appears in more than one cage!");
@@ -79,9 +117,122 @@ $( document ).ready(function() {
                     error = true;
                 }
             }
+
+            static addVirtualCage(cells) {
+                if (typeof cells == "undefined" || cells == null || cells.length == 0) {
+                    alert("Cells not valid: " + cells);
+                }
+                // If cells include whole cages, make a virtual cage for the other cells
+                let newLocations = [];
+                let cellsTotal = 45 * (cells.length/9);
+                let newTotal = cellsTotal;
+                let unionCells = [];
+                let otherCagesTotal = 0;
+                let otherLocations = [];
+                let otherCells = [];
+                for (let index = 0; index < cells.length; index++) {
+                    const cell = cells[index];
+                    if (!unionCells.includes(cell)) {
+                        let cage = cell.cage;
+                        if (typeof cage == "undefined" || cage == null || cage.cells.length == 0) {
+                            alert("Cage not valid: " + cage);
+                        }
+                        let difference = cage.cells.filter(x => !cells.includes(x));
+                        if (difference.length > 0) {
+                            // Add the cell to the new cage
+                            newLocations.push([cell.row, cell.col]);
+                            // Add non-included cells from this cell's cage to other cage
+                            let firstOtherCellForCage = true;
+                            for (const otherCell of difference) {
+                                if (!otherCells.includes(otherCell)) {
+                                    otherCells.push(otherCell);
+                                    otherLocations.push([otherCell.row, otherCell.col])
+                                    if (firstOtherCellForCage) {
+                                        firstOtherCellForCage = false;
+                                        otherCagesTotal += cell.cage.total;
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            newTotal -= cage.total;
+                            unionCells.push(...cage.cells);
+                        }
+                    }
+                }
+                if (newTotal != 0 && newTotal != cellsTotal) {
+                    // If the cage is in a nonet, then it does not allow duplicates
+                    let nodups = cellsTotal == 45;
+                    const maxCageLength = 4;
+                    if (newLocations.length <= maxCageLength) {
+                        let newCage = new Cage(newTotal, newLocations, true, nodups);
+                        if (debug) console.log("Add virtual cage: " + newTotal + "=" + newLocations + ", nodups="+nodups);
+                    }
+                    if (otherLocations.length <= maxCageLength) {
+                        if (nodups) nodups = cellsInNonet(otherCells)
+                        let otherTotal = otherCagesTotal-newTotal;
+                        let otherCage = new Cage(otherTotal, otherLocations, true, nodups);
+                        if (debug) console.log("Add other virtual cage: " + otherTotal + "=" + otherLocations + ", nodups=" + nodups);
+                    }
+                }
+            }
+
+            static addVirtualCages() {
+                for (let size = 1; size <= 5; size++) {
+                    for (let r = 1; r <= 10 - size; r++) {
+                        let cells = [];
+                        for (let r2 = r; r2 < r+size; r2++) {
+                            cells.push(...getRow( r2 ));
+                        }
+                        this.addVirtualCage( cells );
+                    }
+                }
+                for (let size = 1; size <= 5; size++) {
+                    for (let c = 1; c <= 10 - size; c++) {
+                        let cells = [];
+                        for (let c2 = c; c2 < c + size; c2++) {
+                            cells.push(...getColumn(c2));
+                        }
+                        this.addVirtualCage(cells);
+                    }
+                }
+                for (let size = 1; size <= 2; size++) {
+                    for (let r = 1; r <= 9; r += 3) {
+                        for (let c = 1; c <= 9; c += 3) {
+                            if (size == 1 ) {
+                                let cells = [];
+                                cells.push(...getSquare(r, c));
+                                this.addVirtualCage(cells);
+                            }
+                            if (size == 2) {
+                                if (r < 6) {
+                                    let cells = [];
+                                    cells.push(...getSquare(r,c));
+                                    cells.push(...getSquare(r+3, c));
+                                    this.addVirtualCage(cells);
+                                }
+                                if (c < 6) {
+                                    let cells = [];
+                                    cells.push(...getSquare(r, c));
+                                    cells.push(...getSquare(r, c + 3));
+                                    this.addVirtualCage(cells);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         class Cell {
+
+            constructor(row, col) {
+                this.row = row;
+                this.col = col;
+                this.possible = null;
+                this.value = null;
+                this.cage = null;
+            }
 
             initPossible() {
                 if( this.possible == null ) {
@@ -135,13 +286,6 @@ $( document ).ready(function() {
                 }
                 if(debug) console.log("updatePossible: "+this.toString());
                 return update;
-            }
-
-            constructor(row, col) {
-                this.row = row;
-                this.col = col;
-                this.possible = null;
-                this.value = null;
             }
 
             set value(entry) {
@@ -305,7 +449,9 @@ $( document ).ready(function() {
 
             removeCellList( cell, p ) {
                 if( cell.removeList(p) ) {
-                    this.updatedCells.push( cell );
+                    if (!this.updatedCells.includes(cell)) {
+                        this.updatedCells.push(cell);
+                    }
                     return true;
                 }
                 else {
@@ -324,6 +470,26 @@ $( document ).ready(function() {
                     return false;
                 }
             }
+
+            adjacentCells(cell) {
+                let row = cell.row;
+                let col = cell.col;
+                let cells = [];
+                if (row > 1) {
+                    cells.push(theGrid.cells[row - 2][col - 1]);
+                }
+                if (row < 9) {
+                    cells.push(theGrid.cells[row][col - 1]);
+                }
+                if (col > 1) {
+                    cells.push(theGrid.cells[row - 1][col - 2]);
+                }
+                if (col < 9) {
+                    cells.push(theGrid.cells[row - 1][col]);
+                }
+                return cells;
+            }
+
         }
 
         var clearFormatting = function() {
@@ -332,6 +498,14 @@ $( document ).ready(function() {
             $( ".affected").removeClass("affected");
             $( ".highlight").removeClass("highlight");
             $( ".error").removeClass("error");
+        }
+
+        var clearColours = function () {
+            // Undo colouring
+            $(".c1").removeClass("c1");
+            $(".c2").removeClass("c2");
+            $(".c3").removeClass("c3");
+            $(".c4").removeClass("c4");
         }
 
         var initGrid = function( puzzle ) {
@@ -345,9 +519,14 @@ $( document ).ready(function() {
                 }
             }
 
+            initDisplay();
+        };
+
+        var initDisplay = function() {
             updateCount = 0;
             $( '#numUpdates').text( updateCount );
             clearFormatting();
+            clearColours();
         };
 
         var cellId = function( row, col) {
@@ -356,6 +535,16 @@ $( document ).ready(function() {
 
         var displayCell = function( cell ) {
             var id = cellId( cell.row, cell.col );
+            var html = "";
+            // If killer then add cage value
+            if (cell.cage != undefined ) {
+                if (cell.cage.cells[0] == cell) {
+                    html = '<div class="cage">' + cell.cage.total + '</div>';
+                }
+                else {
+                    html = '<div class="cage">&nbsp;</div>';
+                }
+            }
             if( cell.value == null ) {
                 var text = "";
                 if( cell.possible != null ) {
@@ -372,10 +561,19 @@ $( document ).ready(function() {
                         }
                     }
                 }
-                $( id ).html( '<p class="possible">'+text+'</p>' );
+                html += '<div class="possible">'+text+'</div>';
             }
             else {
-                $( id ).html( '<p class="known">'+cell.value+'</p>' );
+                html += '<div class="known">'+cell.value+'</div>';
+            }
+            $(id).html( html );
+            // If killer then colour cell
+            if (cell.cage != undefined) {
+                let colour = cell.cage.colour;
+                if (colour != undefined) {
+                    let colourClass = "c"+colour;
+                    $( id ).addClass(colourClass);
+                }
             }
         }
 
@@ -415,7 +613,6 @@ $( document ).ready(function() {
             return count;
         }
 
-        // @ts-ignore
         var intersectPossible = function( p1, p2 ) {
             var count = 0;
             for( let index = 0; index < 10; index++ ) {
@@ -464,8 +661,67 @@ $( document ).ready(function() {
             return groups;
         }
 
+        var updateCage = function( cage ) {
+            let updatedCells = [];
+            let start = 0;
+            let total = cage.total;
+            let setValues = [];
+            let combinations = findCageCombinations(cage, 0, total, setValues);
+            // Update possible values to union of combinations
+            let unionCombinations = new Array(cage.cells.length);
+            for (let index = 0; index < cage.cells.length; index++) {
+                unionCombinations[index] = [false, false, false, false, false, false, false, false, false];
+            }
+            for (const combination of combinations) {
+                for (let index = 0; index < combination.length; index++) {
+                    const value = combination[index];
+                    unionCombinations[index][value-1] = true;
+                }
+            }
+            for (let index = 0; index < cage.cells.length; index++) {
+                for (let entry = 1; entry < 10; entry++) {
+                    if (!unionCombinations[index][entry-1]) {
+                        let cell = cage.cells[index];
+                        if (theGrid.removeCell(cell,entry) &&
+                            !updatedCells.includes(cell)) {
+                            updatedCells.push(cell);
+                        }
+                    }
+                }
+            }
+            return {
+                updates: updatedCells,
+                errors: []
+            }
+
+        }
+
+        var findCageCombinations = function(cage, index, total, setValues) {
+            let cells = cage.cells;
+            let newCombinations = [];
+            const cell = cells[index];
+            for (let value = 1; value < 10; value++) {
+                if (cell.possible[value-1] &&
+                    !(cage.nodups && setValues.includes(value))){
+                    if( index+1 == cells.length) {
+                        if (total == value) {
+                            setValues.push(value);
+                            newCombinations.push(setValues);
+                            break;
+                        }
+                    }
+                    else if (total > value) {
+                        // find combinations for reduced total in remaining cells
+                        let combinations = findCageCombinations(cage, index + 1, total - value, setValues.concat(value));
+                        newCombinations.push(...combinations);
+                    }
+                }
+            }
+            return newCombinations;
+        }
+
         var createTestCell = function( poss ) {
-            var c = new Cell(1,1);
+            var cell = new Cell(1,1);
             for( let entry = 0; entry < 10; entry++ ) {
                 var found = false;
                 for( let index = 0; index < poss.length; index++ ) {
@@ -475,7 +731,7 @@ $( document ).ready(function() {
                     }
                 }
                 if( ! found ) {
-                    c.remove( entry );
+                    cell.remove( entry );
                 }
             }
             return c;
@@ -596,7 +852,7 @@ $( document ).ready(function() {
                         for( let i = 0; i < possibleCells.length; i++ ) {
                             var c = possibleCells[i];
                             if( ! group.includes( c ) ) {
-                                if( c.removeList( possible ) ) {
+                                if( theGrid.removeCellList( c, possible ) ) {
                                     update = true;
                                     if( ! updatedCells.includes(c)) {
                                         updatedCells.push(c);
@@ -672,6 +928,12 @@ $( document ).ready(function() {
                 }
             }
 
+            /* If killer then check for virtual cage
+            if (cell.cage) {
+                updatedCells = Cage.addVirtualCage(cells);
+            }
+            */
+
             var errors = checkCellList( cell, cells );
 
             return {
@@ -680,34 +942,60 @@ $( document ).ready(function() {
             }
         }
 
-        var updateCellSquare = function( cell ) {
+        var getSquare = function (irow,icol) {
             var cells = [];
-            var row = floor3( cell.row );
-            var col = floor3( cell.col );
-            for( let r = row; r < row+3; r++) {
-                for( let c = col; c < col+3; c++) {
-                    cells.push( theGrid.cells[r-1][c-1] );
+            var row = floor3(irow);
+            var col = floor3(icol);
+            for (let r = row; r < row + 3; r++) {
+                for (let c = col; c < col + 3; c++) {
+                    cells.push(theGrid.cells[r - 1][c - 1]);
                 }
             }
+            return cells;
+        }
+
+        var updateCellSquare = function( cell ) {
+            var cells = getSquare( cell.row, cell.col );
             return updateCellList( cell, cells, true, true );
         }
 
-        var updateCellRow = function( cell ) {
-            var r = cell.row;
+        var getRow = function (row) {
+            var r = row;
             var cells = [];
-            for( let c = 1; c < 10; c++) {
-                cells.push( theGrid.cells[r-1][c-1] );
+            for (let c = 1; c < 10; c++) {
+                cells.push(theGrid.cells[r - 1][c - 1]);
             }
+            return cells;
+        }
+
+        var updateCellRow = function( cell ) {
+            var cells = getRow( cell.row );
             return updateCellList( cell, cells, true, false );
         }
 
-        var updateCellColumn = function( cell ) {
-            var c = cell.col;
+        var getColumn = function (col) {
+            var c = col;
             var cells = [];
-            for( let r = 1; r < 10; r++) {
-                cells.push( theGrid.cells[r-1][c-1] );
+            for (let r = 1; r < 10; r++) {
+                cells.push(theGrid.cells[r - 1][c - 1]);
             }
+            return cells;
+        }
+
+        var updateCellColumn = function( cell ) {
+            var cells = getColumn( cell.col );
             return updateCellList( cell, cells, false, true );
+        }
+
+        var cellsInNonet = function (cells) {
+            let cell = cells[0];
+            let rowCells = getRow(cell.row);
+            if (cells.filter(x => !rowCells.includes(x)).length == 0) return true;
+            let colCells = getColumn(cell.col);
+            if (cells.filter(x => !colCells.includes(x)).length == 0) return true;
+            let squareCells = getSquare(cell.row, cell.col);
+            if (cells.filter(x => !squareCells.includes(x)).length == 0) return true;
+            return false;
         }
 
         var unionUpdates = function( union, updates ) {
@@ -736,6 +1024,13 @@ $( document ).ready(function() {
             union = unionUpdates( union, updateCellSquare( cell ) );
             union = unionUpdates( union, updateCellRow( cell ) );
             union = unionUpdates( union, updateCellColumn( cell ) );
+
+            // If killer then update cage
+            if (cell.cage) {
+                for (let cage of cell.cages) {
+                    union = unionUpdates(union, updateCage(cage) );
+                }
+            }
 
             // Format update
             var id = cellId( cell.row, cell.col );
@@ -873,15 +1168,26 @@ $( document ).ready(function() {
             theGrid = new Grid();
 
             for (let cage of killer) {
-                // @ts-ignore
-                newCage = new Cage(cage.total, cage.cells);
+                let newCage = new Cage(cage.total, cage.cells);
             }
 
             Cage.validateCages();
 
-            updateCount = 0;
-            $('#numUpdates').text(updateCount);
-            clearFormatting();
+            initDisplay();
+            Cage.colourCages();
+
+            for (var row = 1; row < 10; row++) {
+                for (var col = 1; col < 10; col++) {
+                    let cell = theGrid.cells[row-1][col-1];
+                    cell.initPossible();
+                    if (!theGrid.updatedCells.includes(cell)) {
+                        theGrid.updatedCells.push(cell);
+                    }
+                    displayCell(cell);
+                }
+            }
+
+            Cage.addVirtualCages();
         };
 
         return {
@@ -922,12 +1228,16 @@ $( document ).ready(function() {
         return {
             getPuzzle: getPuzzle
         };
-    });
+    })();
 
     var killers = (function () {
 
         var nextKiller = 0;
         var getKiller = function () {
+            const L = "L";
+            const R = "R";
+            const U = "U";
+            const D = "D";
             var Killers = [[
                 { total: 13, cells: [[1, 1],[2, 1]]},
                 { total:  8, cells: [[1, 2], [2, 2], [2,3]] },
@@ -951,22 +1261,106 @@ $( document ).ready(function() {
                 { total: 23, cells: [[7, 5], [7, 6], [7, 7], [8, 5], [9, 5], [9, 6]] },
                 { total: 23, cells: [[8, 3], [9, 1], [9, 2], [9, 3], [9, 4]] },
                 { total:  9, cells: [[8, 6], [8, 7], [9, 7]] },
-                { total: 26, cells: [[8, 8], [8, 8], [9, 8], [9, 9]] },
-            ]];
+                { total: 26, cells: [[8, 8], [8, 9], [9, 8], [9, 9]] },
+                ],
+                [
+                    [14, "L", 16, "L", "L", 6, "L", 9, "L"],
+                    [7, "L", 13, "L", 8, "L", 16, "L", 12],
+                    [14, 15, 3, "L", 7, 23, "L", "L", "U"],
+                    ["U", "U", 12, "L", "U", 12, 10, "U", "U"],
+                    [12, "U", 8, 17, 8, "U", "U", 14, "L"],
+                    ["U", "L", "U", "U", "U", 14, 4, 13, "L"],
+                    [5, 17, 13, 6, "U", "U", "U", 12, "U"],
+                    ["U", "U", "U", "U", 16, 4, 12, "U", 17],
+                    [6, "L", 10, "L", "U", "U", "U", "U", "U"],
+                ],
+                [
+                    [15, L, L, L, 22, L, L, 15, L],
+                    [21, L, 10, L, U, 21, L, 8, 23],
+                    [U, 20, L, L, 23, 9, U, U, U],
+                    [U, 17, L, U, U, U, U, U, U],
+                    [R, U, 21, L, U, L, 8, L, 19],
+                    [U, 21, U, 7, L, 10, R, R, U],
+                    [20, U, L, 23, L, U, L, 20, L],
+                    [U, 9, L, U, L, 25, L, U, 7],
+                    [U, L, L, 11, L, U, L, U, U],
+                ],
+            /*
+                            [
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            ],
+            */
+            ];
             if (nextKiller >= Killers.length) {
                 nextKiller = 0;
             }
-            sudoku.initKiller(Killers[nextKiller]);
+            let killer = gridToKiller(Killers[nextKiller]);
+            sudoku.initKiller(killer);
             nextKiller++;
+        }
+
+        var addCellToKiller = function (killerSpec,r,c,cells) {
+            cells.push([r, c]);
+            // find next column in this row
+            // cage continues with "L"
+            if (c + 1 <= 9 && killerSpec[r - 1][c] == "L") {
+                addCellToKiller(killerSpec, r, c+1, cells);
+            }
+            if (c - 1 >= 1 && killerSpec[r - 1][c - 2] == "R") {
+                addCellToKiller(killerSpec, r, c - 1, cells);
+            }
+            if (r + 1 <= 9 && killerSpec[r][c - 1] == "U") {
+                addCellToKiller(killerSpec, r + 1, c, cells);
+            }
+            if (r - 1 >= 1 && killerSpec[r - 2][c - 1] == "D") {
+                addCellToKiller(killerSpec, r + 1, c, cells);
+            }
+        }
+
+        var gridToKiller = function(killerSpec) {
+            let killer = [];
+            if (Array.isArray(killerSpec[0])) {
+                // construct cages from grid array
+                for (let r = 1; r <= 9; r++) {
+                    let row = killerSpec[r - 1];
+                    for (let c = 1; c <= 9; c++) {
+                        let value = row[c - 1];
+                        // new cage starts with a non-zero number
+                        if (typeof (value) == "number" && value != 0) {
+                            let total = value;
+                            let cells = [];
+                            addCellToKiller(killerSpec,r,c,cells);
+                            let cage = {
+                                total: total,
+                                cells: cells
+                            }
+                            killer.push(cage);
+                        } else if (!["L", "R", "U", "D"].includes(value)) {
+                            alert("Cell["+r+","+c+"] has invalid value "+value);
+                        }
+                    }
+                }
+            } else {
+                killer = killerSpec;
+            }
+            return killer;
         }
 
         return {
             getKiller: getKiller
         };
-    });
+    })();
 
     // puzzles.getPuzzle();
-    killers().getKiller();
+    killers.getKiller();
 
     $("table.fixed td").on('click', function(e) {
         sudoku.highlight(e);
@@ -981,9 +1375,11 @@ $( document ).ready(function() {
         sudoku.keydown(e);
     });
 
-    $( '#getPuzzle').on('click', function() {
-        // @ts-ignore
+    $('#getPuzzle').on('click', function () {
         puzzles.getPuzzle();
+    });
+    $('#getKiller').on('click', function () {
+        killers.getKiller();
     });
     $( '#nextUpdate').on('click', function() {
         sudoku.nextUpdate();

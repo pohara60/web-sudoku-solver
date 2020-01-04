@@ -1,6 +1,6 @@
-table.fixed {table-layout:fixed; width:110px;}/*Setting the table width is important!*/
+table.fixed {table-layout:fixed; width:160px;}/*Setting the table width is important!*/
 table.fixed td {overflow:hidden;}/*Hide text outside the cell.*/
-table.fixed td {width:36px;}/*Setting the width of column 1.*/
+/*table.fixed td {width:50px;}/*Setting the width of column 1.*/
 
 table {
     border-collapse: collapse;
@@ -10,33 +10,69 @@ table, th, td {
     border: 1px solid black;
 }
 
-td {
+td.cell {
 	text-align: right;
     padding: 2px;
-    width: 40px;
-    height: 40px;
+    /*width: 50px;*/
+    height: 50px;
     background-color:#FFFFFF;
+    max-width:50px;
+    min-width:50px; 
+    max-height:50px; 
+    min-height:50px;
+}
+.cage {
+    float: left;
+    width: 30%;
+    font-size:15px;
+    text-align:left;
+    font-weight: bold;
+}
+.possible {
+    float: left;
+    width: 70%;
+    font-size:12px;
+    text-align:right;
+}
+.known {
+    float: left;
+    width: 70%;
+    font-size:36px;
+    text-align:right;
+}
+
+td.cell:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 td.updated {
-    background-color:#00FF00;
+    color:#00FF00;
 }
 td.affected {
-    background-color:#007F00;
+    color:#007F00;
 }
 td.error {
-    background-color:#FF0000;
+    color:#FF0000;
 }
 td.highlight {
-    background-color:#33FFFF;
+    color:#33FFFF;
+}
+
+td.c1 {
+    background-color: rgb(255, 204, 204);
+}
+td.c2{
+    background-color: rgb(204, 204, 255);
+}
+td.c3{
+    background-color: rgb(255, 255, 204);
+}
+td.c4{
+    background-color: rgb(204, 255, 204);
 }
 
 p {
     font-family: Lucida Console, monospace;
-}
-p.known {
-	font-size:36px;
-}
-p.possible {
-	font-size:12px;
 }

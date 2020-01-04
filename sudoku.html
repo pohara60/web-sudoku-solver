@@ -5,6 +5,7 @@
 	</head>
 	<body>
 		<button id="getPuzzle">New Puzzle</button>
+		<button id="getKiller">New Killer</button>
 
 		<div id='container'>
 			<table>
@@ -12,117 +13,57 @@
 					<td>
 						<table class="fixed">
 							<tr>
-								<td id="g11" tabindex="00"></td>
-								<td id="g12" tabindex="01"></td>
-								<td id="g13" tabindex="02"></td>
+								<td id="g11" tabindex="00" class="cell"></td>
+								<td id="g12" tabindex="01" class="cell"></td>
+								<td id="g13" tabindex="02" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g21" tabindex="03"></td>
-								<td id="g22" tabindex="04"></td>
-								<td id="g23" tabindex="05"></td>
+								<td id="g21" tabindex="03" class="cell"></td>
+								<td id="g22" tabindex="04" class="cell"></td>
+								<td id="g23" tabindex="05" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g31" tabindex="06"></td>
-								<td id="g32" tabindex="07"></td>
-								<td id="g33" tabindex="08"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g14" tabindex="09"></td>
-								<td id="g15" tabindex="11"></td>
-								<td id="g16" tabindex="12"></td>
-							</tr>
-							<tr>
-								<td id="g24" tabindex="13"></td>
-								<td id="g25" tabindex="14"></td>
-								<td id="g26" tabindex="15"></td>
-							</tr>
-							<tr>
-								<td id="g34" tabindex="16"></td>
-								<td id="g35" tabindex="17"></td>
-								<td id="g36" tabindex="18"></td>
+								<td id="g31" tabindex="06" class="cell"></td>
+								<td id="g32" tabindex="07" class="cell"></td>
+								<td id="g33" tabindex="08" class="cell"></td>
 							</tr>
 						</table>
 					</td>
 					<td>
 						<table class="fixed">
 							<tr>
-								<td id="g17" tabindex="19"></td>
-								<td id="g18" tabindex="20"></td>
-								<td id="g19" tabindex="21"></td>
+								<td id="g14" tabindex="09" class="cell"></td>
+								<td id="g15" tabindex="11" class="cell"></td>
+								<td id="g16" tabindex="12" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g27" tabindex="21"></td>
-								<td id="g28" tabindex="22"></td>
-								<td id="g29" tabindex="23"></td>
+								<td id="g24" tabindex="13" class="cell"></td>
+								<td id="g25" tabindex="14" class="cell"></td>
+								<td id="g26" tabindex="15" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g37" tabindex="24"></td>
-								<td id="g38" tabindex="25"></td>
-								<td id="g39" tabindex="26"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-				<tr>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g41" tabindex="27"></td>
-								<td id="g42" tabindex="28"></td>
-								<td id="g43" tabindex="29"></td>
-							</tr>
-							<tr>
-								<td id="g51" tabindex="30"></td>
-								<td id="g52" tabindex="31"></td>
-								<td id="g53" tabindex="32"></td>
-							</tr>
-							<tr>
-								<td id="g61" tabindex="33"></td>
-								<td id="g62" tabindex="34"></td>
-								<td id="g63" tabindex="35"></td>
+								<td id="g34" tabindex="16" class="cell"></td>
+								<td id="g35" tabindex="17" class="cell"></td>
+								<td id="g36" tabindex="18" class="cell"></td>
 							</tr>
 						</table>
 					</td>
 					<td>
 						<table class="fixed">
 							<tr>
-								<td id="g44" tabindex="36"></td>
-								<td id="g45" tabindex="37"></td>
-								<td id="g46" tabindex="38"></td>
+								<td id="g17" tabindex="19" class="cell"></td>
+								<td id="g18" tabindex="20" class="cell"></td>
+								<td id="g19" tabindex="21" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g54" tabindex="39"></td>
-								<td id="g55" tabindex="40"></td>
-								<td id="g56" tabindex="41"></td>
+								<td id="g27" tabindex="21" class="cell"></td>
+								<td id="g28" tabindex="22" class="cell"></td>
+								<td id="g29" tabindex="23" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g64" tabindex="42"></td>
-								<td id="g65" tabindex="43"></td>
-								<td id="g66" tabindex="44"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g47" tabindex="45"></td>
-								<td id="g48" tabindex="46"></td>
-								<td id="g49" tabindex="47"></td>
-							</tr>
-							<tr>
-								<td id="g57" tabindex="48"></td>
-								<td id="g58" tabindex="49"></td>
-								<td id="g59" tabindex="50"></td>
-							</tr>
-							<tr>
-								<td id="g67" tabindex="51"></td>
-								<td id="g68" tabindex="52"></td>
-								<td id="g69" tabindex="53"></td>
+								<td id="g37" tabindex="24" class="cell"></td>
+								<td id="g38" tabindex="25" class="cell"></td>
+								<td id="g39" tabindex="26" class="cell"></td>
 							</tr>
 						</table>
 					</td>
@@ -132,57 +73,117 @@
 					<td>
 						<table class="fixed">
 							<tr>
-								<td id="g71" tabindex="54"></td>
-								<td id="g72" tabindex="55"></td>
-								<td id="g73" tabindex="56"></td>
+								<td id="g41" tabindex="27" class="cell"></td>
+								<td id="g42" tabindex="28" class="cell"></td>
+								<td id="g43" tabindex="29" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g81" tabindex="57"></td>
-								<td id="g82" tabindex="58"></td>
-								<td id="g83" tabindex="59"></td>
+								<td id="g51" tabindex="30" class="cell"></td>
+								<td id="g52" tabindex="31" class="cell"></td>
+								<td id="g53" tabindex="32" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g91" tabindex="60"></td>
-								<td id="g92" tabindex="71"></td>
-								<td id="g93" tabindex="62"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g74" tabindex="63"></td>
-								<td id="g75" tabindex="64"></td>
-								<td id="g76" tabindex="65"></td>
-							</tr>
-							<tr>
-								<td id="g84" tabindex="66"></td>
-								<td id="g85" tabindex="67"></td>
-								<td id="g86" tabindex="68"></td>
-							</tr>
-							<tr>
-								<td id="g94" tabindex="69"></td>
-								<td id="g95" tabindex="70"></td>
-								<td id="g96" tabindex="71"></td>
+								<td id="g61" tabindex="33" class="cell"></td>
+								<td id="g62" tabindex="34" class="cell"></td>
+								<td id="g63" tabindex="35" class="cell"></td>
 							</tr>
 						</table>
 					</td>
 					<td>
 						<table class="fixed">
 							<tr>
-								<td id="g77" tabindex="72"></td>
-								<td id="g78" tabindex="73"></td>
-								<td id="g79" tabindex="74"></td>
+								<td id="g44" tabindex="36" class="cell"></td>
+								<td id="g45" tabindex="37" class="cell"></td>
+								<td id="g46" tabindex="38" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g87" tabindex="75"></td>
-								<td id="g88" tabindex="76"></td>
-								<td id="g89" tabindex="77"></td>
+								<td id="g54" tabindex="39" class="cell"></td>
+								<td id="g55" tabindex="40" class="cell"></td>
+								<td id="g56" tabindex="41" class="cell"></td>
 							</tr>
 							<tr>
-								<td id="g97" tabindex="78"></td>
-								<td id="g98" tabindex="79"></td>
-								<td id="g99" tabindex="00"></td>
+								<td id="g64" tabindex="42" class="cell"></td>
+								<td id="g65" tabindex="43" class="cell"></td>
+								<td id="g66" tabindex="44" class="cell"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g47" tabindex="45" class="cell"></td>
+								<td id="g48" tabindex="46" class="cell"></td>
+								<td id="g49" tabindex="47" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g57" tabindex="48" class="cell"></td>
+								<td id="g58" tabindex="49" class="cell"></td>
+								<td id="g59" tabindex="50" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g67" tabindex="51" class="cell"></td>
+								<td id="g68" tabindex="52" class="cell"></td>
+								<td id="g69" tabindex="53" class="cell"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g71" tabindex="54" class="cell"></td>
+								<td id="g72" tabindex="55" class="cell"></td>
+								<td id="g73" tabindex="56" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g81" tabindex="57" class="cell"></td>
+								<td id="g82" tabindex="58" class="cell"></td>
+								<td id="g83" tabindex="59" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g91" tabindex="60" class="cell"></td>
+								<td id="g92" tabindex="71" class="cell"></td>
+								<td id="g93" tabindex="62" class="cell"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g74" tabindex="63" class="cell"></td>
+								<td id="g75" tabindex="64" class="cell"></td>
+								<td id="g76" tabindex="65" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g84" tabindex="66" class="cell"></td>
+								<td id="g85" tabindex="67" class="cell"></td>
+								<td id="g86" tabindex="68" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g94" tabindex="69" class="cell"></td>
+								<td id="g95" tabindex="70" class="cell"></td>
+								<td id="g96" tabindex="71" class="cell"></td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table class="fixed">
+							<tr>
+								<td id="g77" tabindex="72" class="cell"></td>
+								<td id="g78" tabindex="73" class="cell"></td>
+								<td id="g79" tabindex="74" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g87" tabindex="75" class="cell"></td>
+								<td id="g88" tabindex="76" class="cell"></td>
+								<td id="g89" tabindex="77" class="cell"></td>
+							</tr>
+							<tr>
+								<td id="g97" tabindex="78" class="cell"></td>
+								<td id="g98" tabindex="79" class="cell"></td>
+								<td id="g99" tabindex="00" class="cell"></td>
 							</tr>
 						</table>
 					</td>
