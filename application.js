@@ -4,6 +4,9 @@
 
 
 $( document ).ready(function() {
+    window.alert = function () {
+        debugger;
+    }
     var sudoku = (function() {
 
         var debug = true;
@@ -24,14 +27,35 @@ $( document ).ready(function() {
         }
 
         class Cage {
-            constructor(total, locations, virtual = false, nodups = true) {
+            constructor(total, locations, virtual = false, nodups = true, source = "") {
                 this.total = total;
                 this.cells = [];
                 this.virtual = virtual;
                 this.nodups = nodups;
+                this.source = source;
+                // Get cage cells
                 locations.forEach(element => {
                     let cell = theGrid.cells[element[0] - 1][element[1] - 1];
                     this.cells.push(cell);
+                });
+                // Check for duplicate virtual cage - look at cages for first cell
+                if (virtual) {
+                    let cages = this.cells[0].cages;
+                    let duplicate = null;
+                    for (const cage of cages) {
+                        if (cage.total != this.total) continue;
+                        if (cage.cells.length != this.cells.length) continue;
+                        let difference = cage.cells.filter(x => !this.cells.includes(x));
+                        if (difference.length > 0) continue;
+                        duplicate = cage;
+                        // The cage will be a zombie
+                        this.zombie = true;
+                        return;
+                    }
+                }
+                // Set cage for cells
+                this.zombie = false;
+                this.cells.forEach(cell => {
                     if (!virtual) {
                         cell.cage = this;
                     }
@@ -41,13 +65,28 @@ $( document ).ready(function() {
                         cell.cages.push(this);
                     }
                 });
+                // Add non-virtual cage to the grid display
                 if (!virtual) {
                     if (theGrid.cages == null) {
                         theGrid.cages = [this];
                     } else {
                         theGrid.cages.push(this);
                     }
+                } else {
+                    if (debug) console.log("Add virtual cage: " + this);
                 }
+            }
+
+            toString() {
+                let sortedCells = this.cells.sort();
+                var text = String(this.total) + 
+                            "["+this.cells.length+"]"+
+                            (this.virtual?" v":"") + (this.nodups?"n":" ") +": ";
+                text += sortedCells.map(cell => "[" + cell.row + "," + cell.col + "]").join(",");
+                if (this.source != "") {
+                    text += " from "+this.source;
+                }
+                return text;
             }
 
             static colourCages(){
@@ -118,7 +157,7 @@ $( document ).ready(function() {
                 }
             }
 
-            static addVirtualCage(cells) {
+            static addVirtualCage(cells, source) {
                 if (typeof cells == "undefined" || cells == null || cells.length == 0) {
                     alert("Cells not valid: " + cells);
                 }
@@ -129,6 +168,7 @@ $( document ).ready(function() {
                 let unionCells = [];
                 let otherCagesTotal = 0;
                 let otherLocations = [];
+                let newCells = [];
                 let otherCells = [];
                 for (let index = 0; index < cells.length; index++) {
                     const cell = cells[index];
@@ -140,6 +180,7 @@ $( document ).ready(function() {
                         let difference = cage.cells.filter(x => !cells.includes(x));
                         if (difference.length > 0) {
                             // Add the cell to the new cage
+                            newCells.push(cell);
                             newLocations.push([cell.row, cell.col]);
                             // Add non-included cells from this cell's cage to other cage
                             let firstOtherCellForCage = true;
@@ -162,17 +203,15 @@ $( document ).ready(function() {
                 }
                 if (newTotal != 0 && newTotal != cellsTotal) {
                     // If the cage is in a nonet, then it does not allow duplicates
-                    let nodups = cellsTotal == 45;
-                    const maxCageLength = 4;
+                    const maxCageLength = 5;
                     if (newLocations.length <= maxCageLength) {
-                        let newCage = new Cage(newTotal, newLocations, true, nodups);
-                        if (debug) console.log("Add virtual cage: " + newTotal + "=" + newLocations + ", nodups="+nodups);
+                        let nodups = cellsInNonet(newCells)
+                        let newCage = new Cage(newTotal, newLocations, true, nodups, source);
                     }
                     if (otherLocations.length <= maxCageLength) {
-                        if (nodups) nodups = cellsInNonet(otherCells)
+                        let nodups = cellsInNonet(otherCells)
                         let otherTotal = otherCagesTotal-newTotal;
-                        let otherCage = new Cage(otherTotal, otherLocations, true, nodups);
-                        if (debug) console.log("Add other virtual cage: " + otherTotal + "=" + otherLocations + ", nodups=" + nodups);
+                        let otherCage = new Cage(otherTotal, otherLocations, true, nodups, source + " x");
                     }
                 }
             }
@@ -184,7 +223,8 @@ $( document ).ready(function() {
                         for (let r2 = r; r2 < r+size; r2++) {
                             cells.push(...getRow( r2 ));
                         }
-                        this.addVirtualCage( cells );
+                        let source = size == 1 ? "row "+r : "rows "+r+"-"+(r+size-1);
+                        this.addVirtualCage( cells, source );
                     }
                 }
                 for (let size = 1; size <= 5; size++) {
@@ -193,7 +233,8 @@ $( document ).ready(function() {
                         for (let c2 = c; c2 < c + size; c2++) {
                             cells.push(...getColumn(c2));
                         }
-                        this.addVirtualCage(cells);
+                        let source = size == 1 ? "col " + c : "cols " + c + "-" + (c + size - 1);
+                        this.addVirtualCage(cells, source);
                     }
                 }
                 for (let size = 1; size <= 2; size++) {
@@ -202,20 +243,23 @@ $( document ).ready(function() {
                             if (size == 1 ) {
                                 let cells = [];
                                 cells.push(...getSquare(r, c));
-                                this.addVirtualCage(cells);
+                                let source = "sqr " + r + "," + c;
+                                this.addVirtualCage(cells, source);
                             }
                             if (size == 2) {
                                 if (r < 6) {
                                     let cells = [];
                                     cells.push(...getSquare(r,c));
                                     cells.push(...getSquare(r+3, c));
-                                    this.addVirtualCage(cells);
+                                    let source = "sqrs " + r + "," + c + "-" + (r + 3) + "," + c;
+                                    this.addVirtualCage(cells, source);
                                 }
                                 if (c < 6) {
                                     let cells = [];
                                     cells.push(...getSquare(r, c));
                                     cells.push(...getSquare(r, c + 3));
-                                    this.addVirtualCage(cells);
+                                    let source = "sqrs " + r + "," + c + "-" + r + "," + (c+3);
+                                    this.addVirtualCage(cells, source);
                                 }
                             }
                         }
@@ -242,7 +286,7 @@ $( document ).ready(function() {
                     }
                     // Do not update Possible because breaks algorithm
                     //updatePossible();
-                    if(debug) console.log("initPossible: "+this.toString());
+                    //if(debug) console.log("initPossible: "+this.toString());
                 }
             }
 
@@ -734,7 +778,7 @@ $( document ).ready(function() {
                     cell.remove( entry );
                 }
             }
-            return c;
+            return cell;
         }
         var testFindGroups = function() {
             var pC = [
@@ -927,12 +971,6 @@ $( document ).ready(function() {
                     }
                 }
             }
-
-            /* If killer then check for virtual cage
-            if (cell.cage) {
-                updatedCells = Cage.addVirtualCage(cells);
-            }
-            */
 
             var errors = checkCellList( cell, cells );
 
