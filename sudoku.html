@@ -1,206 +1,253 @@
-<html>
-	<head>
-		<h1>Sudoku</h1>
-		<link rel="stylesheet" type="text/css" href="sudoku.css">
-	</head>
-	<body>
-		<button id="getPuzzle">New Puzzle</button>
-		<button id="getKiller">New Killer</button>
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-		<div id='container'>
-			<table>
-				<tr>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g11" tabindex="00" class="cell"></td>
-								<td id="g12" tabindex="01" class="cell"></td>
-								<td id="g13" tabindex="02" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g21" tabindex="03" class="cell"></td>
-								<td id="g22" tabindex="04" class="cell"></td>
-								<td id="g23" tabindex="05" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g31" tabindex="06" class="cell"></td>
-								<td id="g32" tabindex="07" class="cell"></td>
-								<td id="g33" tabindex="08" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g14" tabindex="09" class="cell"></td>
-								<td id="g15" tabindex="11" class="cell"></td>
-								<td id="g16" tabindex="12" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g24" tabindex="13" class="cell"></td>
-								<td id="g25" tabindex="14" class="cell"></td>
-								<td id="g26" tabindex="15" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g34" tabindex="16" class="cell"></td>
-								<td id="g35" tabindex="17" class="cell"></td>
-								<td id="g36" tabindex="18" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g17" tabindex="19" class="cell"></td>
-								<td id="g18" tabindex="20" class="cell"></td>
-								<td id="g19" tabindex="21" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g27" tabindex="21" class="cell"></td>
-								<td id="g28" tabindex="22" class="cell"></td>
-								<td id="g29" tabindex="23" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g37" tabindex="24" class="cell"></td>
-								<td id="g38" tabindex="25" class="cell"></td>
-								<td id="g39" tabindex="26" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 
-				<tr>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g41" tabindex="27" class="cell"></td>
-								<td id="g42" tabindex="28" class="cell"></td>
-								<td id="g43" tabindex="29" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g51" tabindex="30" class="cell"></td>
-								<td id="g52" tabindex="31" class="cell"></td>
-								<td id="g53" tabindex="32" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g61" tabindex="33" class="cell"></td>
-								<td id="g62" tabindex="34" class="cell"></td>
-								<td id="g63" tabindex="35" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g44" tabindex="36" class="cell"></td>
-								<td id="g45" tabindex="37" class="cell"></td>
-								<td id="g46" tabindex="38" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g54" tabindex="39" class="cell"></td>
-								<td id="g55" tabindex="40" class="cell"></td>
-								<td id="g56" tabindex="41" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g64" tabindex="42" class="cell"></td>
-								<td id="g65" tabindex="43" class="cell"></td>
-								<td id="g66" tabindex="44" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g47" tabindex="45" class="cell"></td>
-								<td id="g48" tabindex="46" class="cell"></td>
-								<td id="g49" tabindex="47" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g57" tabindex="48" class="cell"></td>
-								<td id="g58" tabindex="49" class="cell"></td>
-								<td id="g59" tabindex="50" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g67" tabindex="51" class="cell"></td>
-								<td id="g68" tabindex="52" class="cell"></td>
-								<td id="g69" tabindex="53" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-				<tr>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g71" tabindex="54" class="cell"></td>
-								<td id="g72" tabindex="55" class="cell"></td>
-								<td id="g73" tabindex="56" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g81" tabindex="57" class="cell"></td>
-								<td id="g82" tabindex="58" class="cell"></td>
-								<td id="g83" tabindex="59" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g91" tabindex="60" class="cell"></td>
-								<td id="g92" tabindex="71" class="cell"></td>
-								<td id="g93" tabindex="62" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g74" tabindex="63" class="cell"></td>
-								<td id="g75" tabindex="64" class="cell"></td>
-								<td id="g76" tabindex="65" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g84" tabindex="66" class="cell"></td>
-								<td id="g85" tabindex="67" class="cell"></td>
-								<td id="g86" tabindex="68" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g94" tabindex="69" class="cell"></td>
-								<td id="g95" tabindex="70" class="cell"></td>
-								<td id="g96" tabindex="71" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table class="fixed">
-							<tr>
-								<td id="g77" tabindex="72" class="cell"></td>
-								<td id="g78" tabindex="73" class="cell"></td>
-								<td id="g79" tabindex="74" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g87" tabindex="75" class="cell"></td>
-								<td id="g88" tabindex="76" class="cell"></td>
-								<td id="g89" tabindex="77" class="cell"></td>
-							</tr>
-							<tr>
-								<td id="g97" tabindex="78" class="cell"></td>
-								<td id="g98" tabindex="79" class="cell"></td>
-								<td id="g99" tabindex="00" class="cell"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-			</table>
-
-			<button id="nextUpdate">Next</button>
-			<button id="finishUpdates">Finish</button>
-			<button id="retryUpdate">Retry</button>
-			<br>
-			Limit Updates: <input type="text" id="limitUpdates" size="4"/>
-			<br>
-			Number of Updates: <span id="numUpdates">0</span>
+	<h1>Sudoku</h1>
+	<link rel="stylesheet" type="text/css" href="sudoku.css">
+</head>
+<body>
+	<div class="container">
+		<div class="btn-group btn-group-toggle" data-toggle="buttons">
+			<label class="btn btn-primary active">
+				<input type="radio" name="puzzleOptions" id="setKiller" autocomplete="off" checked
+				 data-toggle="tooltip" data-placement="top" title="Select Killer Sudoku">Killer
+			</label>
+			<label class="btn btn-primary">
+				<input type="radio" name="puzzleOptions" id="setSudoku" autocomplete="off"
+				data-toggle="tooltip" data-placement="top" title="Select regular Sudoku">Sudoku
+			</label>
 		</div>
+	</div>
+	<hr>
 
-		<script src="node_modules/jquery/dist/jquery.js"></script>
-		<script src="application.js"></script>
-	</body>
+	<div class="container">
+		<div class="btn-group btn-group-toggle" data-toggle="buttons">
+			<label class="btn btn-primary active">
+				<input type="radio" name="modeOptions" id="setDesign" autocomplete="off" checked
+				data-toggle="tooltip" data-placement="top" title="Create a puzzle">Create
+			</label>
+			<label class="btn btn-primary">
+				<input type="radio" name="modeOptions" id="setSolve" autocomplete="off"
+				data-toggle="tooltip" data-placement="top" title="Solve the puzzle">Solve
+			</label>
+		</div>
+	</div>
+	<hr>
+
+	<div class="container">
+		<button id="getPuzzle" class="design sudoku">New Sudoku</button>
+		<button id="getKiller" class="design killer">New Killer</button>
+	</div>
+
+	<div class="container solve mt-3">
+		<button id="nextUpdate">Next</button>
+		<button id="retryUpdate">Retry</button>
+		<label>Limit Updates:</label><input type="text" id="limitUpdates" size="4">
+		<button id="finishUpdates">Finish</button>
+	</div>
+	<div class="container solve mt-1">
+		Number of Updates: <span id="numUpdates">0</span>
+	</div>
+
+	<div class="container mt-3">
+		<table>
+			<tr>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g11" tabindex="00" class="cell"></td>
+							<td id="g12" tabindex="01" class="cell"></td>
+							<td id="g13" tabindex="02" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g21" tabindex="03" class="cell"></td>
+							<td id="g22" tabindex="04" class="cell"></td>
+							<td id="g23" tabindex="05" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g31" tabindex="06" class="cell"></td>
+							<td id="g32" tabindex="07" class="cell"></td>
+							<td id="g33" tabindex="08" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g14" tabindex="09" class="cell"></td>
+							<td id="g15" tabindex="11" class="cell"></td>
+							<td id="g16" tabindex="12" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g24" tabindex="13" class="cell"></td>
+							<td id="g25" tabindex="14" class="cell"></td>
+							<td id="g26" tabindex="15" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g34" tabindex="16" class="cell"></td>
+							<td id="g35" tabindex="17" class="cell"></td>
+							<td id="g36" tabindex="18" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g17" tabindex="19" class="cell"></td>
+							<td id="g18" tabindex="20" class="cell"></td>
+							<td id="g19" tabindex="21" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g27" tabindex="21" class="cell"></td>
+							<td id="g28" tabindex="22" class="cell"></td>
+							<td id="g29" tabindex="23" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g37" tabindex="24" class="cell"></td>
+							<td id="g38" tabindex="25" class="cell"></td>
+							<td id="g39" tabindex="26" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g41" tabindex="27" class="cell"></td>
+							<td id="g42" tabindex="28" class="cell"></td>
+							<td id="g43" tabindex="29" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g51" tabindex="30" class="cell"></td>
+							<td id="g52" tabindex="31" class="cell"></td>
+							<td id="g53" tabindex="32" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g61" tabindex="33" class="cell"></td>
+							<td id="g62" tabindex="34" class="cell"></td>
+							<td id="g63" tabindex="35" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g44" tabindex="36" class="cell"></td>
+							<td id="g45" tabindex="37" class="cell"></td>
+							<td id="g46" tabindex="38" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g54" tabindex="39" class="cell"></td>
+							<td id="g55" tabindex="40" class="cell"></td>
+							<td id="g56" tabindex="41" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g64" tabindex="42" class="cell"></td>
+							<td id="g65" tabindex="43" class="cell"></td>
+							<td id="g66" tabindex="44" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g47" tabindex="45" class="cell"></td>
+							<td id="g48" tabindex="46" class="cell"></td>
+							<td id="g49" tabindex="47" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g57" tabindex="48" class="cell"></td>
+							<td id="g58" tabindex="49" class="cell"></td>
+							<td id="g59" tabindex="50" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g67" tabindex="51" class="cell"></td>
+							<td id="g68" tabindex="52" class="cell"></td>
+							<td id="g69" tabindex="53" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g71" tabindex="54" class="cell"></td>
+							<td id="g72" tabindex="55" class="cell"></td>
+							<td id="g73" tabindex="56" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g81" tabindex="57" class="cell"></td>
+							<td id="g82" tabindex="58" class="cell"></td>
+							<td id="g83" tabindex="59" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g91" tabindex="60" class="cell"></td>
+							<td id="g92" tabindex="71" class="cell"></td>
+							<td id="g93" tabindex="62" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g74" tabindex="63" class="cell"></td>
+							<td id="g75" tabindex="64" class="cell"></td>
+							<td id="g76" tabindex="65" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g84" tabindex="66" class="cell"></td>
+							<td id="g85" tabindex="67" class="cell"></td>
+							<td id="g86" tabindex="68" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g94" tabindex="69" class="cell"></td>
+							<td id="g95" tabindex="70" class="cell"></td>
+							<td id="g96" tabindex="71" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table class="fixed">
+						<tr>
+							<td id="g77" tabindex="72" class="cell"></td>
+							<td id="g78" tabindex="73" class="cell"></td>
+							<td id="g79" tabindex="74" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g87" tabindex="75" class="cell"></td>
+							<td id="g88" tabindex="76" class="cell"></td>
+							<td id="g89" tabindex="77" class="cell"></td>
+						</tr>
+						<tr>
+							<td id="g97" tabindex="78" class="cell"></td>
+							<td id="g98" tabindex="79" class="cell"></td>
+							<td id="g99" tabindex="00" class="cell"></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+
+		</table>
+	</div>
+
+	<script src="node_modules/jquery/dist/jquery.js"></script>
+	<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="generate.js"></script>
+	<script src="cell.js"></script>
+	<script src="cage.js"></script>
+	<script src="sudoku.js"></script>
+	<script src="application.js"></script>
+</body>
+
 </html>
