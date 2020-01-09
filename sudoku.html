@@ -41,8 +41,9 @@
 	<hr>
 
 	<div class="container">
-		<button id="getPuzzle" class="design sudoku">New Sudoku</button>
-		<button id="getKiller" class="design killer">New Killer</button>
+		<button id="clrGrid"   type="button" class="btn btn-primary design">Clear</button>
+		<button id="getPuzzle" type="button" class="btn btn-primary design sudoku">New Sudoku</button>
+		<button id="getKiller" type="button" class="btn btn-primary design killer">New Killer</button>
 	</div>
 
 	<div class="container solve mt-3">
@@ -192,7 +193,7 @@
 						</tr>
 						<tr>
 							<td id="g91" tabindex="60" class="cell"></td>
-							<td id="g92" tabindex="71" class="cell"></td>
+							<td id="g92" tabindex="61" class="cell"></td>
 							<td id="g93" tabindex="62" class="cell"></td>
 						</tr>
 					</table>
@@ -231,13 +232,24 @@
 						<tr>
 							<td id="g97" tabindex="78" class="cell"></td>
 							<td id="g98" tabindex="79" class="cell"></td>
-							<td id="g99" tabindex="00" class="cell"></td>
+							<td id="g99" tabindex="80" class="cell"></td>
 						</tr>
 					</table>
 				</td>
 			</tr>
 
 		</table>
+	</div>
+	<hr>
+	<div class="container design mt-3">
+		<a class="btn btn-primary" data-toggle="collapse" href="#gridText" id="getGridText" role="button" aria-expanded="false"
+			aria-controls="gridText">
+			Grid Text
+		</a>
+		<div class="collapse" id="gridText">
+			<div class="card card-body">
+			</div>
+		</div>
 	</div>
 
 	<script src="node_modules/jquery/dist/jquery.js"></script>

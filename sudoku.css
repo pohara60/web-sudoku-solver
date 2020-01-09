@@ -14,12 +14,12 @@ td.cell {
 	text-align: right;
     padding: 2px;
     /*width: 50px;*/
-    height: 50px;
+    height: 60px;
     background-color:#FFFFFF;
     max-width:50px;
     min-width:50px; 
-    max-height:50px; 
-    min-height:50px;
+    max-height:60px; 
+    min-height:60px;
 }
 .cage {
     float: left;
@@ -74,5 +74,9 @@ td.c4{
 }
 
 p {
+    font-family: Lucida Console, monospace;
+}
+
+pre {
     font-family: Lucida Console, monospace;
 }

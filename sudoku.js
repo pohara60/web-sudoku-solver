@@ -1,9 +1,10 @@
-    var sudoku = (function() {
+    var sudoku = (function sudoku() {
 
         var debug = false;
         var updateControl = null;
         var theGrid;
         var updateCount;
+        var clearFormatting, clearColours;
 
         var getGrid = function() {
             return theGrid;
@@ -97,28 +98,78 @@
 
         }
 
-        var clearFormatting = function() {
-            // Undo formatting
-            $( ".updated").removeClass("updated");
-            $( ".affected").removeClass("affected");
-            $( ".highlight").removeClass("highlight");
-            $( ".error").removeClass("error");
-        }
-
-        var clearColours = function () {
-            // Undo colouring
-            $(".c1").removeClass("c1");
-            $(".c2").removeClass("c2");
-            $(".c3").removeClass("c3");
-            $(".c4").removeClass("c4");
-        }
-
-        var initGrid = function( puzzle, updateCtl, dbg ) {
+        var initGrid = function (updateCtl, dbg, clrFormatting, clrColours ) {
 
             debug = dbg;
             updateControl = updateCtl;
 
             theGrid = new Grid();
+
+            clearFormatting = clrFormatting;
+            clearColours = clrColours;
+        }
+
+        var displayCell = function (cell) {
+            var id = cellId(cell.row, cell.col);
+            var html = "";
+            // If killer then add cage value
+            if (cell.cage != undefined) {
+                if (cell.cage.cells[0] == cell) {
+                    html = '<div class="cage">' + cell.cage.total + '</div>';
+                }
+                else {
+                    html = '<div class="cage">&nbsp;</div>';
+                }
+            }
+            if (cell.value == null) {
+                var text = "";
+                if (cell.possible != null) {
+                    // Show possibles
+                    for (let entry = 1; entry < 10; entry++) {
+                        if (cell.possible[entry - 1]) {
+                            text = text + entry;
+                        }
+                        else {
+                            text = text + "&nbsp;";
+                        }
+                        if (entry === 3 || entry === 6) {
+                            text = text + "<br>";
+                        }
+                    }
+                }
+                html += '<div class="possible">' + text + '</div>';
+            }
+            else {
+                html += '<div class="known">' + cell.value + '</div>';
+            }
+            $(id).html(html);
+            // If killer then colour cell
+            if (cell.cage != undefined) {
+                let colour = cell.cage.colour;
+                if (colour != undefined) {
+                    let colourClass = "c" + colour;
+                    $(id).addClass(colourClass);
+                }
+            }
+        }
+
+        var setCell = function (row, col, entry) {
+
+            if (!(entry === ".")) {
+                theGrid.setCell(row, col, entry);
+            }
+
+            displayCell(theGrid.cells[row - 1][col - 1]);
+        }
+
+        var initDisplay = function () {
+            updateCount = 0;
+            $(updateControl).text(updateCount);
+            clearFormatting();
+            clearColours();
+        };
+
+        var initPuzzle = function (puzzle) {
 
             for(var row = 1; row < 10; row++) {
                 for(var col = 1; col < 10; col++) {
@@ -130,68 +181,8 @@
             initDisplay();
         };
 
-        var initDisplay = function() {
-            updateCount = 0;
-            $(updateControl).text( updateCount );
-            clearFormatting();
-            clearColours();
-        };
-
         var cellId = function( row, col) {
             return "#g" + row + col;
-        }
-
-        var displayCell = function( cell ) {
-            var id = cellId( cell.row, cell.col );
-            var html = "";
-            // If killer then add cage value
-            if (cell.cage != undefined ) {
-                if (cell.cage.cells[0] == cell) {
-                    html = '<div class="cage">' + cell.cage.total + '</div>';
-                }
-                else {
-                    html = '<div class="cage">&nbsp;</div>';
-                }
-            }
-            if( cell.value == null ) {
-                var text = "";
-                if( cell.possible != null ) {
-                    // Show possibles
-                    for( let entry = 1; entry < 10; entry++) {
-                        if( cell.possible[entry-1]) {
-                            text = text + entry;
-                        }
-                        else {
-                            text = text + "&nbsp;";
-                        }
-                        if( entry === 3 || entry === 6 ) {
-                            text = text + "<br>";
-                        }
-                    }
-                }
-                html += '<div class="possible">'+text+'</div>';
-            }
-            else {
-                html += '<div class="known">'+cell.value+'</div>';
-            }
-            $(id).html( html );
-            // If killer then colour cell
-            if (cell.cage != undefined) {
-                let colour = cell.cage.colour;
-                if (colour != undefined) {
-                    let colourClass = "c"+colour;
-                    $( id ).addClass(colourClass);
-                }
-            }
-        }
-
-        var setCell = function( row, col, entry) {
-            
-            if( ! ( entry === ".") ) {
-                theGrid.setCell( row, col, entry);
-            }
-
-            displayCell( theGrid.cells[row-1][col-1] );
         }
 
         var unionPossible = function( cells ) {
@@ -704,79 +695,7 @@
             }
         }
 
-        var highlight = function(e) {
-            var target = e.target;
-            var td = target.closest("td");
-            clearFormatting();
-            $(td).addClass("highlight");
-            e.stopPropagation();
-        }
-        var keydown = function(e) {
-            e.stopPropagation();
-            var target = e.target;
-            var td = target.closest("td");
-            var id = $( td ).attr("id");
-            var row = Number(id.substr(1,1));
-            var col = Number(id.substr(2,1));
-            var cell = theGrid.cells[row-1][col-1];
-            var code = e.which;
-            // Navigation
-            if( code >= 37 && code <= 40 ) {
-                if( code == 37 ) {
-                    // Left arrow
-                    col--;
-                    if( col == 0 ) {
-                        col = 9;
-                        row--;
-                        if( row == 0 ) row = 9;
-                    }
-                }
-                if( code == 38 ) {
-                    // Up arrow
-                    row--;
-                    if( row == 0 ) {
-                        row = 9;
-                        col--;
-                        if( col == 0 ) col = 9;
-                    }
-                }
-                if( code == 39 ) {
-                    // Right arrow
-                    col++;
-                    if( col == 10 ) {
-                        col = 1;
-                        row++;
-                        if( row == 10 ) row = 1;
-                    }
-                }
-                if( code == 40 ) {
-                    // Down arrow
-                    row++;
-                    if( row == 10 ) {
-                        row = 1;
-                        col++;
-                        if( col == 10 ) col = 1;
-                    }
-                }
-                var id = cellId( row, col );
-                $( id ).focus();
-            }
-            else {
-                var entry = code - 48;
-                if( entry >=1 && entry <= 9 ) {
-                    if( theGrid.toggle( cell, entry ) ) {
-                        displayCell(cell);
-                    }
-                }
-            }
-        }
-
-        var initKiller = function (killer, updateCtl, dbg) {
-
-            debug = dbg;
-            updateControl = updateCtl;
-
-            theGrid = new Grid();
+        var initKiller = function (killer) {
 
             for (let cage of killer) {
                 let newCage = new Cage(cage.total, cage.cells);
@@ -804,16 +723,16 @@
         return {
             getGrid: getGrid,
             initGrid: initGrid,
+            initPuzzle: initPuzzle,
             nextUpdate: nextUpdate,
             finishUpdates: finishUpdates,
             retryUpdate: retryUpdate,
             testFindGroups: testFindGroups,
-            highlight: highlight,
-            keydown: keydown,
             initKiller: initKiller,
             cellsInNonet: cellsInNonet,
             getRow: getRow,
             getColumn: getColumn,
             getSquare: getSquare,
+            initDisplay: initDisplay
         };
     })();
