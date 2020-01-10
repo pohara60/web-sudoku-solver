@@ -382,6 +382,64 @@ var grid = (function () {
         return puzzle;
     }
 
+    var validatePuzzle = function () {
+        let message = "";
+        // values cannot be duplicated in row, column or square
+        for (let r = 1; r <= 9; r++) {
+            let row = theGrid.cells[r - 1];
+            let set = new Array(9);
+            for (let c = 1; c <= 9; c++) {
+                let cell = row[c - 1];
+                if (cell.value != null) {
+                    if (set[cell.value - 1]) {
+                        message += "\nRow[" + r + "] has duplicate value " + cell.value;
+                    } else {
+                        set[cell.value - 1] = true;
+                    }
+                }
+            }
+        }
+        for (let c = 1; c <= 9; c++) {
+            let set = new Array(9);
+            for (let r = 1; r <= 9; r++) {
+                let cell = theGrid.cells[r - 1][c - 1];
+                if (cell.value != null) {
+                    if (set[cell.value - 1]) {
+                        message += "\nCol[" + c + "] has duplicate value " + cell.value;
+                    } else {
+                        set[cell.value - 1] = true;
+                    }
+                }
+            }
+        }
+        let count = 0;
+        for (let row = 1; row <= 9; row += 3) {
+            for (let col = 1; col <= 9; col += 3) {
+                let set = new Array(9);
+                for (let r = row; r < row + 3; r++) {
+                    for (let c = col; c < col + 3; c++) {
+                        let cell = theGrid.cells[r - 1][c - 1];
+                        if (cell.value != null) {
+                            if (set[cell.value - 1]) {
+                                message += "\nSquare[" + row + "," + col + "] has duplicate value " + cell.value;
+                            } else {
+                                set[cell.value - 1] = true;
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (count < 17) {
+            message += "\nNeed at least 17 values for unique solution, only have " + count;
+        }
+        if (message != "") {
+            message = "INVALID PUZZLE" + message;
+        }
+        return message;
+    }
+
     var getPuzzleText = function () {
         let puzzle = getPuzzle();
         let text = "[";
@@ -458,6 +516,32 @@ var grid = (function () {
         return text;
     }
 
+    var validateKiller = function () {
+        let message = "";
+        // all cells must be in a cage
+        for (let r = 1; r <= 9; r++) {
+            let row = theGrid.cells[r - 1];
+            for (let c = 1; c <= 9; c++) {
+                let cell = row[c - 1];
+                if (cell.cage == undefined || cell.cage == null) {
+                    message += "\nCell["+r+","+c+"] is not in a cage";
+                }
+            }
+        }
+        // total of cages must be 45*9
+        let total = 0;
+        for (const cage of theGrid.cages) {
+            total += cage.total;
+        }
+        if (total != 45) {
+            message = "\nCage total is "+total+", should be "+(45*9)+message;
+        }
+        if (message != "") {
+            message = "INVALID KILLER" + message;
+        }
+        return message;
+    }
+
     var addCellToKiller = function (killerSpec, r, c, cells) {
         cells.push([r, c]);
         // find next column in this row
@@ -516,5 +600,7 @@ var grid = (function () {
         setKiller: setKiller,
         getPuzzleText: getPuzzleText,
         getKillerText: getKillerText,
+        validateKiller: validateKiller,
+        validatePuzzle: validatePuzzle,
     };
 })();

@@ -12,9 +12,9 @@ $( document ).ready(function() {
         $('[data-toggle="tooltip"]').tooltip()
     });
 
-    window.alert = function () {
-        debugger;
-    }
+//    window.alert = function () {
+//        debugger;
+//    }
 
     var clearFormatting = function () {
         // Undo formatting
@@ -135,20 +135,35 @@ $( document ).ready(function() {
         clearColours();
         grid.initGrid(killer);
     };
-    var solveGrid = function() {
+    var solveGrid = function(e) {
+        let message = "";
         if (killer) {
             let debug = false;
             sudoku.initGrid('#numUpdates', debug, clearFormatting, clearColours);
             Cage.initCage(sudoku);
             Cell.initCell(sudoku);
-            sudoku.initKiller(grid.getKiller());
+            message = grid.validateKiller();
+            if (message == "") {
+                sudoku.initKiller(grid.getKiller());
+                return true;
+            }
         } else {
             let debug = false;
             sudoku.initGrid('#numUpdates', debug, clearFormatting, clearColours);
             Cage.initCage(sudoku);
             Cell.initCell(sudoku);
-            sudoku.initPuzzle(grid.getPuzzle());
+            message = grid.validatePuzzle();
+            if (message == "") {
+                sudoku.initPuzzle(grid.getPuzzle());
+                return true;
+            }
         }
+        // error
+        alert(message);
+        $("#labelDesign").button("toggle");
+        $("#labelDesign").addClass("active");
+        toggleControls();
+        return false;
     };
     var getGrid = function () {
         let gridText = "";
@@ -233,9 +248,12 @@ $( document ).ready(function() {
         toggleControls();
         clearGrid();
     });
-    $("#setSolve").click(function () {
-        toggleControls();
-        solveGrid();
+    $("#setSolve").on('click',function (e) {
+        if (solveGrid(e)) {
+            toggleControls();
+        } else {
+            return false;
+        }
     });
 
     $("#setKiller").prop('checked', true);
