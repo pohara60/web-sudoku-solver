@@ -277,10 +277,10 @@ var grid = (function () {
                 cell.cage.remove();
                 for (const cell of cells) {
                     var id = cellId(cell.row, cell.col);
-                    $("id").removeClass("td.c1");
-                    $("id").removeClass("td.c2");
-                    $("id").removeClass("td.c3");
-                    $("id").removeClass("td.c4");
+                    $(id).removeClass("c1");
+                    $(id).removeClass("c2");
+                    $(id).removeClass("c3");
+                    $(id).removeClass("c4");
                     displayCell(cell);
                 }
             }
@@ -317,10 +317,10 @@ var grid = (function () {
         // If killer then colour cell
         if (cell.cage != undefined) {
             let colour = cell.cage.colour;
-            $("id").removeClass("c1");
-            $("id").removeClass("c2");
-            $("id").removeClass("c3");
-            $("id").removeClass("c4");
+            $(id).removeClass("c1");
+            $(id).removeClass("c2");
+            $(id).removeClass("c3");
+            $(id).removeClass("c4");
             if (colour != undefined) {
                 let colourClass = "c" + colour;
                 $(id).addClass(colourClass);
