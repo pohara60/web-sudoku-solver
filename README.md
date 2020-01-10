@@ -1,72 +1,51 @@
 # web-sudoku-solver
 
-## Branch killer
-Enhance for Killer Sudoku
+## Introduction
 
-## Class Cell
-|Method|Description|
-|----|-----------|
-|constructor(row, col)|Construct cell|
-|initPossible()|Setup array of possible values for cell|
-|updatePossible()|Update possible values for cell, looking at Nonet, Row and Column|
-|set value(entry)|Set or initialize cell value|
-|get value()|Get cell value|
-|remove(entry)|Remove entry from cell possibles|
-|removeList(p)|Remove list of entries from cell possibles|
-|toggle(entry)|Toggle entry for cell possibles|
-|toString()|Format cell|
+The application let's the user Create Sudoku and Killer Sudoku puzzles, and invoke an automatic solver.
+*It does not currently let the user solve the puzzle manually.*
 
-## Class Grid
+## Creation
 
-|Properties|Description|
-|----|-----------|
-|updatedCells|List of updated cells to be processed|
-|unknownCells|Count of unknown cells|
+### Sudoku
 
-|Method|Description|
-|----|-----------|
-|constructor()|Construct grid with cells|
-|setCell(row,col,entry)|Set cell entry|
-|nextUpdate()|Get next updated cell to process|
-|removeCell(cell,entry)|Remove entry cell from cell possibles|
-|removeCellList(cell,p)|Remove list of entries from cell possibles|
-|toggle(cell,entry)|Toggle entry for cell possibles|
+Enter the digits 1 to 9 in at least 17 cells to define a Sudoku.
 
+### Killer Sudoku
 
-## Global Variables
+Define "cages" of cells with their associated total value, so that all cells are included in a cage, 
+and the total is 9 * 45 (i.e. 405).
+- Enter one or two digits in an empty cell to start a new cage with the specified total.
+- Enter the letters L (Left), U (Up), R (Right), D (Down) in an empty cell to join the cell into 
+the cage that includes the cell in the specified direction.
+- Use Backspace in a cell to delete the cage that contains it
 
-|Name|Description|
-|----|-----------|
-|debug|Trace execution to console|
-|theGrid|The Sudoku grid|
-|updateCount|Number of updates|
+### Puzzle Text
 
-## Functions
-|Name|Description|
-|----|-----------|
-|floor3(r)|Return 1, 4 or 7|
-|clearFormatting()|Remove formatting from page|
-|initGrid(puzzle)|Initialize grid from puzzle matrix|
-|cellId(row,col)|Construct cell Id|
-|displayCell(cell)|Display cell with value or possibles|
-|setCell(row,col,entry)|Set cell and display it|
-|unionPossible(cells)|Get union of cells possibles|
-|countPossible(possible)|Count number of possibles|
-|intersectPossible(p1,p2)|Get intersection of possibles|
-|subtractPossible(p1,p2)|Subtract possibles|
-|findGroups(pC,g,sC,f)|Find groups of "g" cells out of "pC" that have "g" possibles|
-|createTestCell(poss)|Create test cell with possibles|
-|testFindGroups()|Test findGroups|
-|unknownCells(cells)|Return unknown cells|
-|checkCellList(cell,cells)|Check for duplicate/impossible entries in cells|
-|updateCellList(cell,cells,checkRow,checkCol)|Update cells for an updated cell|
-|updateCellSquare(cell)|Update Nonet for an updated cell|
-|updateCellRow(cell)|Update Row for an updated cell|
-|updateCellColumn(cell)|Update Column for an updated cell|
-|unionUpdates(union,updates)|Union updates/errors|
-|updateCell(cell)|Update cell and display changes|
-|nextUpdate()|Update next cell from update queue|
-|finishUpdates(limit)|Perform next limit updates|
-|retryUpdate()|Try updating next cell in turn|
-|highlight(e)|Handle click event|
-|keydown(e)|Handle keydown event|
+The user can get a textual definition of the current puzzle. 
+This can be pasted into the existing puzzles in the source code.
+
+## Solution
+
+The automatic solver maintains a list of cells to examine. 
+- For Sudoku puzzles this starts as the specified cells.
+- For Killer Sudoku it is the total cells of the cages.
+
+The processing proceeds as follows:
+- Get the next cell to examine from the start of the list of cells to examine.
+- Check the cell against its row, column and square to see if any cell in those groups can be updated.
+- For Killer Sudoku, check the cell's cage to see if any cell in the cage can be updated.
+- Updated cells are added to the end of the list to examine.
+
+The Next button processes one cell.
+The Finish button processes the number of cells specified by Limit Updates, or the complete list if no limit is specified.
+The number of cells processed since the beginning is shown in Number of Updates.
+
+## To Do
+
+1. Allow the user to update a puzzle in the solver, and permit continued automatic solution.
+2. Implement a backtracking solver that solves the puzzle using brute force, to check for a valid puzzle.
+3. Explain the solution steps as the solution progresses.
+4. Let the user paste in puzzle text, so they can re-enter previously saved puzzles.
+5. Generate new puzzles, rather than just have hard-coded puzzles.
+6. Analyze puzzles for degree of difficulty.
