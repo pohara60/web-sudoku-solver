@@ -114,6 +114,7 @@ $( document ).ready(function() {
         else if (code ==8) {
             // Backspace
             grid.removeCell(row, col);
+            $(td).trigger("click");
         }
     }
 
