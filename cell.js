@@ -164,10 +164,14 @@
                     this.value = null;
                 }
                 if( this.possible[entry-1] ) {
+                    this.possible[entry - 1] = false;
+                    /* Do not use this.remove to auto set values in manual mode
                     this.remove( entry );
+                    */
                 }
                 else {
                     this.possible[entry-1] = true;
+                    /* Do not auto set values in manual mode 
                     var countTrue = 0;
                     for( let e = 1; e < 10; e++) {
                         if( this.possible[e-1]) {
@@ -177,6 +181,7 @@
                     if( countTrue == 1 ) {
                         this.value = entry;
                     }
+                    */
                 }
                 if(sudoku.debug) console.log("toggle "+entry+": "+this);
                 return true;

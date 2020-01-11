@@ -23,14 +23,29 @@
                 this.unknownCells = 81;
             }
 
-            setCell(row, col, entry) {
+            addUpdatedCell(cell, manual = false) {
+                let index = this.updatedCells.indexOf(cell);
+                if (manual) {
+                    // For manual updates ensure the cell is at start of update list
+                    if (index != -1) {
+                        this.updatedCells.splice(index, 1);
+                    }
+                    this.updatedCells.unshift(cell);
+                } else {
+                    // For automatic updates ensure the cell is in the update list
+                    if (index == -1) {
+                        this.updatedCells.push(cell);
+                    }
+                }
+            }
+
+
+            setCell(row, col, entry, manual = false) {
                 var cell = this.cells[row-1][col-1];
                 var value = Number(entry);
                 if( cell.value != value) {
                     cell.value = value;
-                    if( ! this.updatedCells.includes( cell )) {
-                        this.updatedCells.push( cell );
-                    }
+                    this.addUpdatedCell(cell, manual);
                 }
             }
 
@@ -43,9 +58,7 @@
 
             removeCell( cell, entry ) {
                 if( cell.remove(entry) ) {
-                    if( ! this.updatedCells.includes( cell )) {
-                        this.updatedCells.push( cell );
-                    }
+                    this.addUpdatedCell(cell);
                     return true;
                 }
                 else {
@@ -55,9 +68,7 @@
 
             removeCellList( cell, p ) {
                 if( cell.removeList(p) ) {
-                    if (!this.updatedCells.includes(cell)) {
-                        this.updatedCells.push(cell);
-                    }
+                    this.addUpdatedCell(cell);
                     return true;
                 }
                 else {
@@ -65,11 +76,9 @@
                 }
             }
 
-            toggle( cell, entry ) {
+            toggle(cell, entry, manual = false ) {
                 if( cell.toggle(entry) ) {
-                    if( ! this.updatedCells.includes( cell )) {
-                        this.updatedCells.push( cell );
-                    }
+                    this.addUpdatedCell(cell, manual);
                     return true;
                 }
                 else {
@@ -153,18 +162,25 @@
             }
         }
 
-        var setCell = function (row, col, entry) {
+        var setCell = function (row, col, entry, manual = false) {
 
             if (!(entry === ".")) {
-                theGrid.setCell(row, col, entry);
+                theGrid.setCell(row, col, entry, manual);
             }
 
             displayCell(theGrid.cells[row - 1][col - 1]);
         }
 
+        var toggle = function(row, col, entry, manual = false) {
+            let cell = theGrid.cells[row - 1][col - 1];
+            if (theGrid.toggle(cell, entry, manual)) {
+                displayCell(cell);
+            }
+        }
+
         var initDisplay = function () {
             updateCount = 0;
-            $(updateControl).text(updateCount);
+            $(updateControl).attr("value",updateCount);
             clearFormatting();
             clearColours();
         };
@@ -733,6 +749,8 @@
             getRow: getRow,
             getColumn: getColumn,
             getSquare: getSquare,
-            initDisplay: initDisplay
+            initDisplay: initDisplay,
+            setCell: setCell,
+            toggle: toggle,
         };
     })();

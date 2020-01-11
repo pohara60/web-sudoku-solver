@@ -7,6 +7,7 @@ $( document ).ready(function() {
 
     let killer = true;
     let design = true;
+    let setValue = true;
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
@@ -98,6 +99,12 @@ $( document ).ready(function() {
             if (entry >= 0 && entry <= 9) {
                 if (design) {
                     grid.setCell(row, col, entry);
+                } else {
+                    if (setValue) {
+                        sudoku.setCell(row, col, entry, true);
+                    } else {
+                        sudoku.toggle(row, col, entry, true);
+                    }
                 }
             }
             var id = cellId(row, col);
@@ -115,6 +122,20 @@ $( document ).ready(function() {
             // Backspace
             grid.removeCell(row, col);
             $(td).trigger("click");
+        }
+        else if (code == 80 || code == 86) {
+            // P toggle possible V set value
+            if (code == 80) {
+                $("#setPossible").prop('checked', true);
+            }
+            if (code == 86) {
+                $("#setValue").prop('checked', true);
+            }
+            toggleManual();
+        }
+        else if (code == 78) {
+            // N next update
+            $('#nextUpdate').trigger('click');
         }
     }
 
@@ -186,7 +207,7 @@ $( document ).ready(function() {
         let killer = killers.getKiller();
         grid.setKiller(killer);
     });
-    $( '#nextUpdate').on('click', function() {
+    $('#nextUpdate').on('click', function() {
         sudoku.nextUpdate();
     });
     $( '#retryUpdate').on('click', function() {
@@ -252,9 +273,22 @@ $( document ).ready(function() {
     $("#setSolve").on('click',function (e) {
         if (solveGrid(e)) {
             toggleControls();
+            $("#setValue").prop('checked', true);
+            toggleManual();
         } else {
             return false;
         }
+    });
+
+    var toggleManual = function () {
+        setValue = $("#setValue").prop('checked');
+        // setPossible = $("#setPossible").prop('checked');
+    }
+    $("#setValue").click(function () {
+        toggleManual();
+    });
+    $("#setPossible").click(function () {
+        toggleManual();
     });
 
     $("#setKiller").prop('checked', true);
