@@ -8,6 +8,7 @@ $( document ).ready(function() {
     let killer = true;
     let design = true;
     let setValue = true;
+    let currentCell = null;
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
@@ -39,6 +40,8 @@ $( document ).ready(function() {
         clearFormatting();
         $(td).addClass("highlight");
         e.stopPropagation();
+        let id = $(td).attr("id");
+        currentCell = id;
     }
 
     var cellId = function (row, col) {
@@ -93,6 +96,7 @@ $( document ).ready(function() {
             }
             var id = cellId(row, col);
             $(id).focus();
+            currentCell = id;
         }
         else if (code >= 48 && code <= 57) {
             var entry = code - 48;
@@ -109,6 +113,7 @@ $( document ).ready(function() {
             }
             var id = cellId(row, col);
             $(td).trigger("click");
+            currentCell = id;
         }
         else if (killer && [68,76,82,85].includes(code)) {
             let entry = code == 68 ? "D" : code == 76 ? "L" : code == 82 ? "R" : code ==85 ? "U" : "";
@@ -117,11 +122,17 @@ $( document ).ready(function() {
             }
             var id = cellId(row, col);
             $(td).trigger("click");
+            currentCell = id;
         }
         else if (code ==8) {
             // Backspace
-            grid.removeCell(row, col);
+            if (design) {
+                grid.removeCell(row, col);
+            } else {
+                sudoku.setCell(row, col, null, true);
+            }
             $(td).trigger("click");
+            currentCell = id;
         }
         else if (code == 80 || code == 86) {
             // P toggle possible V set value
@@ -136,6 +147,10 @@ $( document ).ready(function() {
         else if (code == 78) {
             // N next update
             $('#nextUpdate').trigger('click');
+        }
+        else if (code == 85) {
+            // U Update possible
+            $('#updatePossible').trigger('click');
         }
     }
 
@@ -152,10 +167,18 @@ $( document ).ready(function() {
         keydown(e);
     });
 
+    var clearError = function () {
+    }
+    var showError = function (message) {
+        alert(message);
+    }
     var clearGrid = function () {
         clearFormatting();
         clearColours();
         grid.initGrid(killer);
+        var id = cellId(1, 1);
+        $(id).focus();
+        currentCell = id;
     };
     var solveGrid = function(e) {
         let message = "";
@@ -207,13 +230,23 @@ $( document ).ready(function() {
         let killer = killers.getKiller();
         grid.setKiller(killer);
     });
+    $('#updatePossible').on('click', function (e) {
+        var row = Number(currentCell.substr(2, 1));
+        var col = Number(currentCell.substr(3, 1));
+        let messages = sudoku.updateOtherPossible(row,col);
+        if (messages.length > 0) {
+            let message =messages.join("\n");
+            showError(message);
+        }
+    });
+
     $('#nextUpdate').on('click', function() {
         sudoku.nextUpdate();
     });
-    $( '#retryUpdate').on('click', function() {
+    $('#retryUpdate').on('click', function() {
         sudoku.retryUpdate();
     });
-    $( '#finishUpdates').on('click', function() {
+    $('#finishUpdates').on('click', function() {
         var limitString = $( "#limitUpdates" ).val();
         var limit = Number( limitString );
         sudoku.finishUpdates( limit );
@@ -275,6 +308,10 @@ $( document ).ready(function() {
             toggleControls();
             $("#setValue").prop('checked', true);
             toggleManual();
+            clearError();
+            var id = cellId(1, 1);
+            $(id).focus();
+            currentCell = id;
         } else {
             return false;
         }

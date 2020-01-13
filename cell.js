@@ -40,54 +40,17 @@
                 }
             }
 
-            updatePossible() {
-                this.initPossible();
-
-                // Remove known values from square, row, col
-                var update = false;
-                var row = floor3( this.row );
-                var col = floor3( this.col );
-                for( let r = row; r < row+3; r++) {
-                    for( let c = col; c < col+3; c++) {
-                        if( ! (r === this.row && c === this.col )) {
-                            var cell = Cell.theGrid.cells[r-1][c-1];
-                            var value = cell.value;
-                            if( value != null ) {
-                                if( this.remove(value) ) update = true;
-                            }
-                        }
-                    }
-                }
-                var r = this.row;
-                for( let c = 1; c < 10; c++) {
-                    if( ! (r === this.row && c === this.col )) {
-                        var cell = Cell.theGrid.cells[r-1][c-1];
-                        var value = cell.value;
-                        if( value != null ) {
-                            if( this.remove(value) ) update = true;
-                        }
-                    }
-                }
-                var c = this.col;
-                for( let r = 1; r < 10; r++) {
-                    if( ! (r === this.row && c === this.col )) {
-                        var cell = Cell.theGrid.cells[r-1][c-1];
-                        var value = cell.value;
-                        if( value != null ) {
-                            if( this.remove(value) ) update = true;
-                        }
-                    }
-                }
-                if(sudoku.debug) console.log("updatePossible: "+this.toString());
-                return update;
-            }
-
             set value(entry) {
                 if( entry == null) {
-                    if( this._value != null ) {
+                    if (this._value == undefined) {
+                        this._value = null;
+                    } else if( this._value != null ) {
                         Cell.theGrid.unknownCells++;
                         this._value = null;
                     }
+                    // All values possible
+                    this.possible = null;
+                    this.initPossible();
                     return;
                 }
 
@@ -185,6 +148,20 @@
                 }
                 if(sudoku.debug) console.log("toggle "+entry+": "+this);
                 return true;
+            }
+
+            add(entry) {
+                let update = false;
+                // Do not initPossible because it sets all entries to possible
+                if (this.possible == null) {
+                    this.possible = new Array(9);
+                }
+                if (!this.possible[entry - 1]) {
+                    this.possible[entry - 1] = true;
+                    update = true;
+                }
+                if (sudoku.debug) console.log("toggle " + entry + ": " + this);
+                return update;
             }
 
             toString() {

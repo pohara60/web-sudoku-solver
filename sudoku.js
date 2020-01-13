@@ -42,11 +42,13 @@
 
             setCell(row, col, entry, manual = false) {
                 var cell = this.cells[row-1][col-1];
-                var value = Number(entry);
+                var value = entry;  // Not Number(entry) because allow null
                 if( cell.value != value) {
                     cell.value = value;
                     this.addUpdatedCell(cell, manual);
+                    return true;
                 }
+                return false;
             }
 
             nextUpdate() {
@@ -164,11 +166,19 @@
 
         var setCell = function (row, col, entry, manual = false) {
 
-            if (!(entry === ".")) {
-                theGrid.setCell(row, col, entry, manual);
+            let union = { updates: [], errors: [], messages: [] };
+            let cell = theGrid.cells[row - 1][col - 1];
+            if (entry != ".") {
+                if (cell.value != null && entry == null) {
+                    // Add the cell value to possible of linked cells
+                    union = addOtherPossible(cell);
+                }
+                if (theGrid.setCell(row, col, entry, manual)) {
+                    union.updates.push(cell);
+                }
             }
 
-            displayCell(theGrid.cells[row - 1][col - 1]);
+            displayCellList(cell, union);
         }
 
         var toggle = function(row, col, entry, manual = false) {
@@ -547,7 +557,8 @@
 
             return {
                 updates: updatedCells,
-                errors: errors
+                errors: errors,
+                messages: []
             }
         }
 
@@ -611,12 +622,38 @@
             if( union == null ) {
                 union = {
                     updates: [],
-                    errors: []
+                    errors: [],
+                    messages: []
                 }
             }
             return {
                 updates: union.updates.concat( updates.updates ),
-                errors: union.errors.concat( updates.errors )
+                errors: union.errors.concat( updates.errors ),
+                messages: union.messages.concat(updates.messages)
+            }
+        }
+
+        var displayCellList = function(cell, union) {
+
+            // Format update
+            let id = cellId(cell.row, cell.col);
+            $(id).addClass("highlight");
+            for (let index = 0; index < union.updates.length; index++) {
+                let cell2 = union.updates[index];
+                let id = cellId(cell2.row, cell2.col);
+                if (cell2 === cell) {
+                    $(id).removeClass("highlight");
+                    $(id).addClass("updated");
+                } else {
+                    $(id).addClass("affected");
+                }
+                displayCell(cell2);
+            }
+            for (let index = 0; index < union.errors.length; index++) {
+                cell = union.errors[index];
+                id = cellId(cell.row, cell.col);
+                $(id).addClass("error");
+                displayCell(cell);
             }
         }
 
@@ -624,12 +661,10 @@
             clearFormatting();
 
             var update = false;
-            var union = {updates:[], errors:[]};
+            var union = {updates:[], errors:[], messages:[]};
             if( cell.value == null ) {
                 // Possible values may have changed due to other updates
-                if (cell.updatePossible()) {
-                    union.updates.push(cell);
-                }
+                union = unionUpdates(union, updatePossible(cell));
             }
 
             union = unionUpdates( union, updateCellSquare( cell ) );
@@ -644,25 +679,7 @@
             }
 
             // Format update
-            let id = cellId(cell.row, cell.col);
-            $( id ).addClass("highlight");
-            for( let index = 0; index < union.updates.length; index++ ) {
-                let cell2 = union.updates[index];
-                let id = cellId(cell2.row, cell2.col);
-                if( cell2 === cell) {
-                    $( id ).removeClass("highlight");
-                    $( id ).addClass("updated");
-                } else {
-                    $( id ).addClass("affected");
-                }
-                displayCell( cell2 );
-            }
-            for( let index = 0; index < union.errors.length; index++ ) {
-                cell = union.errors[index];
-                id = cellId( cell.row, cell.col );
-                $( id ).addClass("error");
-                displayCell( cell );
-            }
+            displayCellList( cell, union );
 
             updateCount++;
             $(updateControl).text( updateCount );
@@ -672,12 +689,204 @@
             return true;
         }
 
+        var updatePossibleList = function(cell, cells, location) {
+            var errors = [];
+            var messages = [];
+            var update = false;
+            var values = new Array(9);
+            for (const c of cells) {
+                if (c != cell) {
+                    var value = c.value;
+                    if (value != null) {
+                        if (cell.remove(value)) update = true;
+                        if (values[value - 1]) {
+                            errors.push(c);
+                            messages.push("Duplicate value " + value + " in " +location);
+                        } else {
+                            values[value - 1] = true;
+                        }
+                    }
+
+                }
+            }
+            return { updates: update ? [cell] : [], errors: errors, messages: messages };
+        }
+
+        var updatePossible = function(cell) {
+            cell.initPossible();
+
+            // Remove known values from square, row, col
+            let union = { updates: [], errors: [], messages: [] };
+            let cells = getSquare(cell.row, cell.col);
+            let location = "square[" + cells[0].row + ", " + cells[0].col + "]";
+            union = unionUpdates(union, updatePossibleList(cell, cells, location));
+
+            cells = getRow(cell.row);
+            location = "row[" + cells[0].row + "]";
+            union = unionUpdates(union, updatePossibleList(cell, cells, location));
+
+            cells = getColumn(cell.col);
+            location = "column[" + cells[0].col + "]";
+            union = unionUpdates(union, updatePossibleList(cell, cells, location));
+            
+            if (debug) console.log("updatePossible: " + cell.toString());
+            return union;
+        }
+
+        var updateOtherPossibleList = function (cell, cells, location) {
+            var updates = [];
+            var errors = [];
+            var messages = [];
+            var values = new Array(9);
+            values[cell.value - 1] = true;
+            for (const c of cells) {
+                if (c != cell) {
+                    var value = c.value;
+                    if (value != null) {
+                        if (values[value - 1]) {
+                            errors.push(c);
+                            messages.push("Duplicate value " + value + " in " + location);
+                        } else {
+                            values[value - 1] = true;
+                        }
+                    } else {
+                        if (c.remove(cell.value)) {
+                            updates.push(c);
+                        }
+                    }
+                }
+            }
+            return { updates: updates, errors: errors, messages: messages };
+        }
+
+        var cellUpdateOtherPossible = function (cell) {
+            // Only done for known cells
+            let union = { updates: [], errors: [], messages: [] };
+            if (cell.value == null) return union;
+
+            // Remove known value from square, row, col
+            let cells = getSquare(cell.row, cell.col);
+            let location = "square[" + cells[0].row + ", " + cells[0].col + "]";
+            union = unionUpdates(union, updateOtherPossibleList(cell, cells, location));
+
+            cells = getRow(cell.row);
+            location = "row[" + cells[0].row + "]";
+            union = unionUpdates(union, updateOtherPossibleList(cell, cells, location));
+
+            cells = getColumn(cell.col);
+            location = "column[" + cells[0].col + "]";
+            union = unionUpdates(union, updateOtherPossibleList(cell, cells, location));
+
+            if (debug) console.log("cellUpdateOtherPossible: " + cell.toString());
+            return union;
+        }
+
+        var addOtherPossibleList = function (cell, cells, location) {
+            var updates = [];
+            var errors = [];
+            var messages = [];
+            var values = new Array(9);
+            /* This strategy does not work across rows, cols and squares
+            // Get other known values
+            for (const c of cells) {
+                if (c != cell) {
+                    var value = c.value;
+                    if (value != null) {
+                        if (values[value - 1]) {
+                            errors.push(c);
+                            messages.push("Duplicate value " + value + " in " + location);
+                        } else {
+                            values[value - 1] = true;
+                        }
+                    }
+                }
+            }
+            */
+            // If cell value not known in other cells, add it to possible
+            if (!values[cell.value-1]) {
+                for (const c of cells) {
+                    if (c != cell) {
+                        var value = c.value;
+                        if (value == null) {
+                            if (c.add(cell.value)) {
+                                updates.push(c);
+                            }
+                        }
+                    }
+                }
+            }
+            return { updates: updates, errors: errors, messages: messages };
+        }
+
+        var addOtherPossible = function (cell) {
+            // Only done for known cells
+            let union = { updates: [], errors: [], messages: [] };
+            if (cell.value == null) return union;
+
+            // Remove known value from square, row, col
+            let cells = getSquare(cell.row, cell.col);
+            let location = "square[" + cells[0].row + ", " + cells[0].col + "]";
+            union = unionUpdates(union, addOtherPossibleList(cell, cells, location));
+
+            cells = getRow(cell.row);
+            location = "row[" + cells[0].row + "]";
+            union = unionUpdates(union, addOtherPossibleList(cell, cells, location));
+
+            cells = getColumn(cell.col);
+            location = "column[" + cells[0].col + "]";
+            union = unionUpdates(union, addOtherPossibleList(cell, cells, location));
+
+            if (debug) console.log("addOtherPossible: " + cell.toString());
+            return union;
+        }
+
         var nextUpdate = function() {
 
             var cell = theGrid.nextUpdate();
             if( cell == undefined ) return false;
 
             return updateCell( cell );
+        }
+
+        var updateOtherPossible = function (row,col) {
+            // This does NOT update the one cell's possible
+            // It updates the possible for all cells in the cell's row, column and square for this cell's value
+            let cell = theGrid.cells[row-1][col-1];
+
+            clearFormatting();
+
+            var update = false;
+            let union = cellUpdateOtherPossible(cell);
+
+            // If killer then update cage
+            if (cell.cage) {
+            }
+
+            // Format update
+            let id = cellId(cell.row, cell.col);
+            $(id).addClass("highlight");
+            for (let index = 0; index < union.updates.length; index++) {
+                let cell2 = union.updates[index];
+                let id = cellId(cell2.row, cell2.col);
+                if (cell2 === cell) {
+                    $(id).removeClass("highlight");
+                    $(id).addClass("updated");
+                } else {
+                    $(id).addClass("affected");
+                }
+                displayCell(cell2);
+            }
+            for (let index = 0; index < union.errors.length; index++) {
+                cell = union.errors[index];
+                id = cellId(cell.row, cell.col);
+                $(id).addClass("error");
+                displayCell(cell);
+            }
+
+            updateCount++;
+            $(updateControl).text(updateCount);
+
+            return union.messages;
         }
 
         var finishUpdates = function( limit ) {
@@ -752,5 +961,6 @@
             initDisplay: initDisplay,
             setCell: setCell,
             toggle: toggle,
+            updateOtherPossible: updateOtherPossible,
         };
     })();
