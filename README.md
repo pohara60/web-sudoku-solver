@@ -3,7 +3,7 @@
 ## Introduction
 
 The application let's the user Create Sudoku and Killer Sudoku puzzles, and invoke an automatic solver.
-*It does not currently let the user solve the puzzle manually.*
+"The user may also manually solve simple Sudoku puzzles, but there is limited validation.*
 
 ## Creation
 
@@ -27,6 +27,8 @@ This can be pasted into the existing puzzles in the source code.
 
 ## Solution
 
+### Automatic Solution
+
 The automatic solver maintains a list of cells to examine. 
 - For Sudoku puzzles this starts as the specified cells.
 - For Killer Sudoku it is the total cells of the cages.
@@ -41,9 +43,22 @@ The Next button processes one cell.
 The Finish button processes the number of cells specified by Limit Updates, or the complete list if no limit is specified.
 The number of cells processed since the beginning is shown in Number of Updates.
 
+### Manual Solution
+
+The user may update cell values and possible values.
+- The Set Value and Toggle Possible buttons specify what update is performed.
+- A numerical value in a cell sets or toggles that value.
+- Backspace clears a cell value.
+
+There is some support for automating possible values:
+- The Update button sets updates possible values for cells linked to the current cell.
+- Backspace adds the deleted value to possible values for cells linked to the current cell.
+
+*There is no automation of Killer Sudoku cage possible values.*
+
 ## To Do
 
-1. Allow the user to update a puzzle in the solver, and permit continued automatic solution.
+1. Improve manual solution.
 2. Implement a backtracking solver that solves the puzzle using brute force, to check for a valid puzzle.
 3. Explain the solution steps as the solution progresses.
 4. Let the user paste in puzzle text, so they can re-enter previously saved puzzles.
