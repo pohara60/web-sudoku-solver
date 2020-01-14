@@ -14,9 +14,9 @@ $( document ).ready(function() {
         $('[data-toggle="tooltip"]').tooltip()
     });
 
-//    window.alert = function () {
-//        debugger;
-//    }
+    window.alert = function () {
+        debugger;
+    }
 
     var clearFormatting = function () {
         // Undo formatting
@@ -182,6 +182,10 @@ $( document ).ready(function() {
     };
     var solveGrid = function(e) {
         let message = "";
+        // Check for solutions
+        let solutionCount = grid.solveGrid();
+        alert("Solution count: " + solutionCount);
+
         if (killer) {
             let debug = false;
             sudoku.initGrid('#numUpdates', debug, clearFormatting, clearColours);

@@ -27,6 +27,8 @@ This can be pasted into the existing puzzles in the source code.
 
 ## Solution
 
+When the user presses the Solve button, the puzzle is solved with a backtracking (brute-force) solver, and the number of solutions is displayed. Then the grid is changed to the solution grid ready for manual or automatic solution.
+
 ### Automatic Solution
 
 The automatic solver maintains a list of cells to examine. 
@@ -59,7 +61,6 @@ There is some support for automating possible values:
 ## To Do
 
 1. Improve manual solution.
-2. Implement a backtracking solver that solves the puzzle using brute force, to check for a valid puzzle.
 3. Explain the solution steps as the solution progresses.
 4. Let the user paste in puzzle text, so they can re-enter previously saved puzzles.
 5. Generate new puzzles, rather than just have hard-coded puzzles.

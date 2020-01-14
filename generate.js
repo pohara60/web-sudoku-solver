@@ -146,26 +146,53 @@ var grid = (function () {
             Cage.theGrid = theGrid;
         }
 
-        constructor(total, locations) {
+        constructor(total, locations, virtual = false, nodups = true, source = "") {
             this.total = total;
             this.cells = [];
+            this.virtual = virtual;
+            this.nodups = nodups;
+            this.source = source;
+
             // Get cage cells
             locations.forEach(element => {
                 let cell = Cage.theGrid.cells[element[0] - 1][element[1] - 1];
                 this.cells.push(cell);
             });
+            // Check for duplicate virtual cage - look at cages for first cell
+            if (virtual) {
+                let cages = this.cells[0].cages;
+                let duplicate = null;
+                for (const cage of cages) {
+                    if (cage.total != this.total) continue;
+                    if (cage.cells.length != this.cells.length) continue;
+                    let difference = cage.cells.filter(x => !this.cells.includes(x));
+                    if (difference.length > 0) continue;
+                    duplicate = cage;
+                    // The cage will be a zombie
+                    this.zombie = true;
+                    return;
+                }
+            }
+            // Set cage for cells
+            this.zombie = false;
             // Set cage for cells
             this.cells.forEach(cell => {
-                cell.cage = this;
-                if( cell === this.cells[0]) {
-                    cell.value = total;
+                if (!virtual) {
+                    cell.cage = this;
+                }
+                if (!cell.cages) {
+                    cell.cages = [this];
+                } else {
+                    cell.cages.push(this);
                 }
             });
             // Add cage to the grid display
-            if (Cage.theGrid.cages == null) {
-                Cage.theGrid.cages = [this];
-            } else {
-                Cage.theGrid.cages.push(this);
+            if (!virtual) {
+                if (Cage.theGrid.cages == null) {
+                    Cage.theGrid.cages = [this];
+                } else {
+                    Cage.theGrid.cages.push(this);
+                }
             }
         }
 
@@ -270,6 +297,7 @@ var grid = (function () {
                         let cell = this.cells[row - 1][col - 1];
                         cage.cells.push(cell);
                         cell.cage = cage;
+                        cell.cages = [cage];
                         cell.value = entry;
                         displayCell(cell);
                     }
@@ -280,6 +308,7 @@ var grid = (function () {
                 cage = cell.cage;
                 if (cage === undefined || cage == null) {
                     cage = new Cage(value, [[row,col]]);
+                    cell.value = value;
                     displayCell(cell);
                 } else if (cage.cells[0] === cell) {
                     // Can only update first cell of cage
@@ -302,6 +331,7 @@ var grid = (function () {
             if (cell.cage != undefined) {
                 let cells = cell.cage.cells;
                 cell.cage.remove();
+                cell.cages = [];
                 for (const cell of cells) {
                     var id = cellId(cell.row, cell.col);
                     $(id).removeClass("c1");
@@ -616,6 +646,341 @@ var grid = (function () {
         return killer;
     }
 
+    var getSquare = function (irow, icol) {
+        var cells = [];
+        var row = floor3(irow);
+        var col = floor3(icol);
+        for (let r = row; r < row + 3; r++) {
+            for (let c = col; c < col + 3; c++) {
+                cells.push(theGrid.cells[r - 1][c - 1]);
+            }
+        }
+        return cells;
+    }
+
+    var getRow = function (row) {
+        var r = row;
+        var cells = [];
+        for (let c = 1; c < 10; c++) {
+            cells.push(theGrid.cells[r - 1][c - 1]);
+        }
+        return cells;
+    }
+
+    var getColumn = function (col) {
+        var c = col;
+        var cells = [];
+        for (let r = 1; r < 10; r++) {
+            cells.push(theGrid.cells[r - 1][c - 1]);
+        }
+        return cells;
+    }
+
+    var cellsInNonet = function (cells) {
+        let cell = cells[0];
+        let rowCells = getRow(cell.row);
+        if (cells.filter(x => !rowCells.includes(x)).length == 0) return true;
+        let colCells = getColumn(cell.col);
+        if (cells.filter(x => !colCells.includes(x)).length == 0) return true;
+        let squareCells = getSquare(cell.row, cell.col);
+        if (cells.filter(x => !squareCells.includes(x)).length == 0) return true;
+        return false;
+    }
+
+    var addVirtualCage = function (cells, source) {
+        if (typeof cells == "undefined" || cells == null || cells.length == 0) {
+            alert("Cells not valid: " + cells);
+        }
+        // If cells include whole cages, make a virtual cage for the other cells
+        let newLocations = [];
+        let cellsTotal = 45 * (cells.length / 9);
+        let newTotal = cellsTotal;
+        let unionCells = [];
+        let otherCagesTotal = 0;
+        let otherLocations = [];
+        let newCells = [];
+        let otherCells = [];
+        for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            if (!unionCells.includes(cell)) {
+                let cage = cell.cage;
+                if (typeof cage == "undefined" || cage == null || cage.cells.length == 0) {
+                    alert("Cage not valid: " + cage);
+                }
+                let difference = cage.cells.filter(x => !cells.includes(x));
+                if (difference.length > 0) {
+                    // Add the cell to the new cage
+                    newCells.push(cell);
+                    newLocations.push([cell.row, cell.col]);
+                    // Add non-included cells from this cell's cage to other cage
+                    let firstOtherCellForCage = true;
+                    for (const otherCell of difference) {
+                        if (!otherCells.includes(otherCell)) {
+                            otherCells.push(otherCell);
+                            otherLocations.push([otherCell.row, otherCell.col])
+                            if (firstOtherCellForCage) {
+                                firstOtherCellForCage = false;
+                                otherCagesTotal += cell.cage.total;
+                            }
+                        }
+                    }
+                }
+                else {
+                    newTotal -= cage.total;
+                    unionCells.push(...cage.cells);
+                }
+            }
+        }
+        if (newTotal != 0 && newTotal != cellsTotal) {
+            // If the cage is in a nonet, then it does not allow duplicates
+            const maxCageLength = 5;
+            if (newLocations.length <= maxCageLength) {
+                let nodups = cellsInNonet(newCells)
+                let newCage = new Cage(newTotal, newLocations, true, nodups, source);
+            }
+            if (otherLocations.length <= maxCageLength) {
+                let nodups = cellsInNonet(otherCells)
+                let otherTotal = otherCagesTotal - newTotal;
+                let otherCage = new Cage(otherTotal, otherLocations, true, nodups, source + " x");
+            }
+        }
+    }
+
+    var addVirtualCages = function() {
+        for (let size = 1; size <= 5; size++) {
+            for (let r = 1; r <= 10 - size; r++) {
+                let cells = [];
+                for (let r2 = r; r2 < r + size; r2++) {
+                    cells.push(...getRow(r2));
+                }
+                let source = size == 1 ? "row " + r : "rows " + r + "-" + (r + size - 1);
+                addVirtualCage(cells, source);
+            }
+        }
+        for (let size = 1; size <= 5; size++) {
+            for (let c = 1; c <= 10 - size; c++) {
+                let cells = [];
+                for (let c2 = c; c2 < c + size; c2++) {
+                    cells.push(...getColumn(c2));
+                }
+                let source = size == 1 ? "col " + c : "cols " + c + "-" + (c + size - 1);
+                addVirtualCage(cells, source);
+            }
+        }
+        for (let size = 1; size <= 2; size++) {
+            for (let r = 1; r <= 9; r += 3) {
+                for (let c = 1; c <= 9; c += 3) {
+                    if (size == 1) {
+                        let cells = [];
+                        cells.push(...getSquare(r, c));
+                        let source = "sqr " + r + "," + c;
+                        addVirtualCage(cells, source);
+                    }
+                    if (size == 2) {
+                        if (r < 6) {
+                            let cells = [];
+                            cells.push(...getSquare(r, c));
+                            cells.push(...getSquare(r + 3, c));
+                            let source = "sqrs " + r + "," + c + "-" + (r + 3) + "," + c;
+                            addVirtualCage(cells, source);
+                        }
+                        if (c < 6) {
+                            let cells = [];
+                            cells.push(...getSquare(r, c));
+                            cells.push(...getSquare(r, c + 3));
+                            let source = "sqrs " + r + "," + c + "-" + r + "," + (c + 3);
+                            addVirtualCage(cells, source);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    var backtrackCount;
+
+    var solveGrid = function () {
+        // Copy grid to solution
+        let solution = new Array(9);        
+        for (var row = 1; row < 10; row++) {
+            solution[row - 1] = new Array(9);
+            for (var col = 1; col < 10; col++) {
+                let scell = { cell: theGrid.cells[row - 1][col - 1], value: null };
+                solution[row - 1][col - 1] = scell;
+                let value = scell.cell.value;
+                let cage = scell.cell.cage;
+                if (value == undefined || cage != null) value = null;
+                scell.value = value;
+            }
+        }
+        // Add virtual cages for killer
+        if (killer) {
+            addVirtualCages();
+        }
+        // Get list of solution cells in order of possible values
+        let solutionList = [].concat.apply([], solution);
+        solutionList.map( scell => scell.countPossible = solutionPossibleValues(solution,scell).filter(v => v).length);
+        solutionList.sort((a,b) => {
+            if (a.countPossible == b.countPossible) {
+                // Prefer element with value set
+                if (a.value != null) return -1;
+                if (b.value != null) return 1;
+            }
+            return (a.countPossible - b.countPossible);
+        });
+        // Recursively backtrack over solution list - skip known values at start of list
+        let index = solutionList.filter( scell => scell.value != null).length;
+        let t0 = performance.now();
+        backtrackCount = 0;
+        let solutionCount = backtrack( solution, solutionList, 0);
+        let t1 = performance.now();
+        console.log("Backtrack took " + (t1 - t0) + " milliseconds to backtrack " + backtrackCount + " times");
+        return solutionCount;
+    }
+
+    var solutionPossibleValues = function(solution, scell) {
+        let row = scell.cell.row;
+        let col = scell.cell.col;
+        let possible = new Array(9);
+        if (scell.value == null) {
+            possible.fill(true);
+            for (let c = 1; c <= 9; c++) {
+                let value = solution[row - 1][c - 1].value;
+                if (value != null) {
+                    possible[value - 1] = false;
+                }
+            }
+            for (let r = 1; r <= 9; r++) {
+                let value = solution[r - 1][col - 1].value;
+                if (value != null) {
+                    possible[value - 1] = false;
+                }
+            }
+            var srow = floor3(row);
+            var scol = floor3(col);
+            for (let r = srow; r < srow + 3; r++) {
+                for (let c = scol; c < scol + 3; c++) {
+                    let value = solution[r - 1][c - 1].value;
+                    if (value != null) {
+                        possible[value - 1] = false;
+                    }
+                }
+            }
+            if (killer) {
+                for (let cage of theGrid.cells[row - 1][col - 1].cages) {
+                    let total = cage.total;
+                    let minimum = 1;
+                    let count = 0;
+                    for (let cell of cage.cells) {
+                        let value = solution[cell.row - 1][cell.col - 1].value;
+                        if (value != null) {
+                            if (cage.nodups) possible[value - 1] = false;
+                            total -= value;
+                        
+                        } else {
+                            //if (cell.row != row || cell.col != col) {
+                            //    total -= minimum;
+                            //    if (cage.nodups) minimum++;
+                            //}
+                            count++;
+                        }
+                    }
+                    //for (let value = total + 1; value <= 9; value++) {
+                    //    possible[value - 1] = false;
+                    //}
+                    if (cage.nodups) {
+                        let cagePossible = cacheTotalPossible(total,count);
+                        for (let value = 1; value < 10; value++) {
+                            if (!cagePossible[value-1]) {
+                                possible[value - 1] = false;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            possible[scell.value - 1] = true;
+        }
+        return possible;
+    }
+
+    var cacheTotalPossible = function (total, length) {
+        if (this.cache == undefined) {
+            this.cache = new Map();
+        }
+        let key = "" + total + "," + length;
+        if (this.cache.has(key)) {
+            return this.cache.get(key);
+        }
+        let possible = findTotalPossible(total, length);
+        this.cache.set(key,possible);
+        return possible;
+    }
+
+    var findTotalPossible = function (total, length) {
+        let setValues = [];
+        let combinations = findTotalCombinations(total, length, setValues);
+        // Union the combinations
+        let possible = new Array(9);
+        for (const combination of combinations) {
+            for (const value of combination) {
+                possible[value-1] = true;
+            }
+        }
+        return possible;
+    }
+
+    var findTotalCombinations = function (total, length, setValues) {
+        let newCombinations = [];
+        // Want unique combinations, so start at highest value
+        let last = setValues.length == 0 ? 0 : setValues[setValues.length-1];
+        for (let value = last+1; value < 10; value++) {
+            if (!setValues.includes(value)) {
+                if (length == 1) {
+                    if (total == value) {
+                        setValues.push(value);
+                        newCombinations.push(setValues);
+                        break;
+                    }
+                }
+                else if (total > value) {
+                    // find combinations for reduced total in remaining cells
+                    let combinations = findTotalCombinations(total - value, length - 1, setValues.concat(value));
+                    newCombinations.push(...combinations);
+                }
+            }
+        }
+        return newCombinations;
+    }
+
+    var backtrack = function(solution, solutionList, index) {
+        backtrackCount++;
+
+        // Try each possible value of solution[row,col]
+        let scell = solutionList[index];
+        let startValue = scell.value;
+        let solutionCount = 0;
+        let impossible = true;
+        let possible = solutionPossibleValues(solution, scell);
+        for (let value = 1; value <=9; value++) {
+            if (possible[value-1]) {
+                scell.value = value;
+                impossible  = false;
+                if (index+1 >= solutionList.length) {
+                    // Solution!
+                    solutionCount++;
+                }
+                else {
+                    solutionCount += backtrack(solution, solutionList, index+1);
+                }
+            }
+        }
+        if (impossible) {
+            impossible = true;
+        }
+        scell.value = startValue;
+        return solutionCount;
+    }
 
     return {
         initGrid: initGrid,
@@ -629,5 +994,6 @@ var grid = (function () {
         getKillerText: getKillerText,
         validateKiller: validateKiller,
         validatePuzzle: validatePuzzle,
+        solveGrid: solveGrid,
     };
 })();
