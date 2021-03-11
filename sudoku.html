@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
@@ -11,15 +12,15 @@
 	<h1>Sudoku</h1>
 	<link rel="stylesheet" type="text/css" href="sudoku.css">
 </head>
+
 <body>
 	<div class="container">
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-primary active" 
-			data-toggle="tooltip" data-placement="top" title="Select Killer Sudoku">
+			<label class="btn btn-primary active" data-toggle="tooltip" data-placement="top"
+				title="Select Killer Sudoku">
 				<input type="radio" name="puzzleOptions" id="setKiller" autocomplete="off" checked>Killer
 			</label>
-			<label class="btn btn-primary"
-			data-toggle="tooltip" data-placement="top" title="Select regular Sudoku">
+			<label class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Select regular Sudoku">
 				<input type="radio" name="puzzleOptions" id="setSudoku" autocomplete="off">Sudoku
 			</label>
 		</div>
@@ -28,12 +29,12 @@
 
 	<div class="container">
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-primary active" id="labelDesign"
-			data-toggle="tooltip" data-placement="top" title="Create a puzzle">
+			<label class="btn btn-primary active" id="labelDesign" data-toggle="tooltip" data-placement="top"
+				title="Create a puzzle">
 				<input type="radio" name="modeOptions" id="setDesign" autocomplete="off" checked>Create
 			</label>
-			<label class="btn btn-primary" id="labelSolve"
-			data-toggle="tooltip" data-placement="top" title="Solve the puzzle">
+			<label class="btn btn-primary" id="labelSolve" data-toggle="tooltip" data-placement="top"
+				title="Solve the puzzle">
 				<input type="radio" name="modeOptions" id="setSolve" autocomplete="off">Solve
 			</label>
 		</div>
@@ -41,15 +42,16 @@
 	<hr>
 
 	<div class="container">
-		<button id="clrGrid"   type="button" class="btn btn-primary design"
-				data-toggle="tooltip" data-placement="top" title="Clear the puzzle">Clear</button>
-		<button id="getPuzzle" type="button" class="btn btn-primary design sudoku"
-				data-toggle="tooltip" data-placement="top" title="Get a new puzzle">New Sudoku</button>
-		<button id="getKiller" type="button" class="btn btn-primary design killer"
-				data-toggle="tooltip" data-placement="top" title="Get a new killer">New Killer</button>
+		<button id="clrGrid" type="button" class="btn btn-primary design" data-toggle="tooltip" data-placement="top"
+			title="Clear the puzzle">Clear</button>
+		<button id="getPuzzle" type="button" class="btn btn-primary design sudoku" data-toggle="tooltip"
+			data-placement="top" title="Get a new puzzle">New Sudoku</button>
+		<button id="getKiller" type="button" class="btn btn-primary design killer" data-toggle="tooltip"
+			data-placement="top" title="Get a new killer">New Killer</button>
 	</div>
 
 	<div class="container solve mt-3">
+		<label>Manual Input Mode:</label>
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
 			<label class="btn btn-primary active">
 				<input type="radio" name="manualOptions" id="setValue" autocomplete="off" checked data-toggle="tooltip"
@@ -67,9 +69,9 @@
 	</div>
 
 	<div class="container mt-3">
-		<table>
+		<table style="float:left;">
 			<tr>
-				<td>
+				<td class="grid">
 					<table class="fixed">
 						<tr>
 							<td id="g11" tabindex="00" class="cell"></td>
@@ -247,20 +249,26 @@
 					</table>
 				</td>
 			</tr>
-
 		</table>
+		<textarea id="messages" style="width: 460px;height: 543px;" readonly></textarea>
 	</div>
+	<div style="clear:both;"></div>
 
 	<div class="container solve mt-3">
-		<button id="nextUpdate" type="button" class="btn btn-primary"
-		data-toggle="tooltip" data-placement="top" title="Automatically update next cell (shortcut N)">Next</button>
+		<button id="nextUpdate" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
+			title="Automatically update next cell (shortcut N)">Next</button>
 		<button id="retryUpdate" type="button" class="btn btn-primary">Retry</button>
+		<button id="undoUpdate" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
+			title="Undo last uodate">Undo</button>
 		<form class="form-inline mt-1">
 			<div class="form-group mb-2">
 				<label for="limitUpdates">Limit Updates:</label>
 				<input type="number" class="form-control" id="limitUpdates" size="1">
 			</div>
-			<button id="finishUpdates" type="button" class="btn btn-primary mb-2">Finish</button>
+			<button id="finishUpdates" type="button" class="btn btn-primary mb-2" data-toggle="tooltip"
+				data-placement="bottom" title="Do Limit Updates if specified, or Finish ">Finish</button>
+			<button id="resetUpdates" type="button" class="btn btn-primary mb-2" data-toggle="tooltip"
+				data-placement="bottom" title="Reset solution to start">Reset</button>
 		</form>
 	</div>
 	<div class="container solve mt-1">
@@ -269,13 +277,13 @@
 				<label for="numUpdates">Number of Updates:</label>
 				<input type="text" readonly class="form-control-plaintext" id="numUpdates" value="0" size="1">
 			</div>
-		</form>	
+		</form>
 	</div>
 	<hr>
 
 	<div class="container design mt-3">
-		<a class="btn btn-primary" data-toggle="collapse" href="#gridText" id="getGridText" role="button" aria-expanded="false"
-			aria-controls="gridText">
+		<a class="btn btn-primary" data-toggle="collapse" href="#gridText" id="getGridText" role="button"
+			aria-expanded="false" aria-controls="gridText">
 			Grid Text
 		</a>
 		<div class="collapse" id="gridText">

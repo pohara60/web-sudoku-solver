@@ -1,44 +1,48 @@
-table.fixed {table-layout:fixed; width:160px;}/*Setting the table width is important!*/
-table.fixed td {overflow:hidden;}/*Hide text outside the cell.*/
+table.fixed {
+    /* table-layout: fixed; */
+    float: left;
+} /*Setting the table width is important!*/
+table.fixed td {
+    overflow: hidden;
+} /*Hide text outside the cell.*/
 /*table.fixed td {width:50px;}/*Setting the width of column 1.*/
 
-table {
+table.fixed {
     border-collapse: collapse;
-}
-
-table, th, td {
     border: 1px solid black;
 }
 
 td.cell {
-	text-align: right;
+    border: 1px solid black;
+    text-align: right;
     padding: 2px;
     /*width: 50px;*/
     height: 60px;
-    background-color:#FFFFFF;
-    max-width:50px;
-    min-width:50px; 
-    max-height:60px; 
-    min-height:60px;
+    background-color: #ffffff;
+    max-width: 50px;
+    min-width: 50px;
+    max-height: 60px;
+    min-height: 60px;
 }
+
 .cage {
     float: left;
     width: 30%;
-    font-size:15px;
-    text-align:left;
+    font-size: 15px;
+    text-align: left;
     font-weight: bold;
 }
 .possible {
     float: left;
     width: 70%;
-    font-size:12px;
-    text-align:right;
+    font-size: 12px;
+    text-align: right;
 }
 .known {
     float: left;
     width: 70%;
-    font-size:36px;
-    text-align:right;
+    font-size: 36px;
+    text-align: right;
 }
 
 td.cell:after {
@@ -48,28 +52,28 @@ td.cell:after {
 }
 
 td.updated {
-    color:#00FF00;
+    color: #00ff00;
 }
 td.affected {
-    color:#007F00;
+    color: #007f00;
 }
 td.error {
-    color:#FF0000;
+    color: #ff0000;
 }
 td.highlight {
-    color:#33FFFF;
+    color: #33ffff;
 }
 
 td.c1 {
     background-color: rgb(255, 204, 204);
 }
-td.c2{
+td.c2 {
     background-color: rgb(204, 204, 255);
 }
-td.c3{
+td.c3 {
     background-color: rgb(255, 255, 204);
 }
-td.c4{
+td.c4 {
     background-color: rgb(204, 255, 204);
 }
 

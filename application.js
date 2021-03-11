@@ -2,21 +2,19 @@
  * Sudoku
  */
 
-
-$( document ).ready(function() {
-
+$(document).ready(function () {
     let killer = true;
     let design = true;
     let setValue = true;
     let currentCell = null;
 
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="tooltip"]').tooltip();
     });
 
     window.alert = function () {
         debugger;
-    }
+    };
 
     var clearFormatting = function () {
         // Undo formatting
@@ -24,7 +22,7 @@ $( document ).ready(function() {
         $(".affected").removeClass("affected");
         $(".highlight").removeClass("highlight");
         $(".error").removeClass("error");
-    }
+    };
 
     var clearColours = function () {
         // Undo colouring
@@ -32,7 +30,7 @@ $( document ).ready(function() {
         $(".c2").removeClass("c2");
         $(".c3").removeClass("c3");
         $(".c4").removeClass("c4");
-    }
+    };
 
     var highlight = function (e) {
         var target = e.target;
@@ -42,11 +40,16 @@ $( document ).ready(function() {
         e.stopPropagation();
         let id = $(td).attr("id");
         currentCell = id;
-    }
+    };
+
+    var showMessages = function (messages) {
+        var message = messages == null ? "" : messages.join("\n");
+        $("#messages").val(message);
+    };
 
     var cellId = function (row, col) {
         return "#g" + row + col;
-    }
+    };
 
     var keydown = function (e) {
         e.stopPropagation();
@@ -97,8 +100,7 @@ $( document ).ready(function() {
             var id = cellId(row, col);
             $(id).focus();
             currentCell = id;
-        }
-        else if (code >= 48 && code <= 57) {
+        } else if (code >= 48 && code <= 57) {
             var entry = code - 48;
             if (entry >= 0 && entry <= 9) {
                 if (design) {
@@ -114,17 +116,24 @@ $( document ).ready(function() {
             var id = cellId(row, col);
             $(td).trigger("click");
             currentCell = id;
-        }
-        else if (killer && [68,76,82,85].includes(code)) {
-            let entry = code == 68 ? "D" : code == 76 ? "L" : code == 82 ? "R" : code ==85 ? "U" : "";
+        } else if (killer && [68, 76, 82, 85].includes(code)) {
+            let entry =
+                code == 68
+                    ? "D"
+                    : code == 76
+                    ? "L"
+                    : code == 82
+                    ? "R"
+                    : code == 85
+                    ? "U"
+                    : "";
             if (design) {
                 grid.setCell(row, col, entry);
             }
             var id = cellId(row, col);
             $(td).trigger("click");
             currentCell = id;
-        }
-        else if (code ==8) {
+        } else if (code == 8) {
             // Backspace
             if (design) {
                 grid.removeCell(row, col);
@@ -133,45 +142,41 @@ $( document ).ready(function() {
             }
             $(td).trigger("click");
             currentCell = id;
-        }
-        else if (code == 80 || code == 86) {
+        } else if (code == 80 || code == 86) {
             // P toggle possible V set value
             if (code == 80) {
-                $("#setPossible").prop('checked', true);
+                $("#setPossible").prop("checked", true);
             }
             if (code == 86) {
-                $("#setValue").prop('checked', true);
+                $("#setValue").prop("checked", true);
             }
             toggleManual();
-        }
-        else if (code == 78) {
+        } else if (code == 78) {
             // N next update
-            $('#nextUpdate').trigger('click');
-        }
-        else if (code == 85) {
+            $("#nextUpdate").trigger("click");
+        } else if (code == 85) {
             // U Update possible
-            $('#updatePossible').trigger('click');
+            $("#updatePossible").trigger("click");
         }
-    }
+    };
 
-    $("table.fixed td").on('click', function(e) {
+    $("table.fixed td").on("click", function (e) {
         highlight(e);
     });
-    $("table.fixed td").on('focus', function(e) {
+    $("table.fixed td").on("focus", function (e) {
         highlight(e);
     });
-    $("table.fixed td").on('keydown', function(e) {
+    $("table.fixed td").on("keydown", function (e) {
         keydown(e);
     });
-    $("table.fixed p").on('keydown', function(e) {
+    $("table.fixed p").on("keydown", function (e) {
         keydown(e);
     });
 
-    var clearError = function () {
-    }
+    var clearError = function () {};
     var showError = function (message) {
         alert(message);
-    }
+    };
     var clearGrid = function () {
         clearFormatting();
         clearColours();
@@ -180,15 +185,23 @@ $( document ).ready(function() {
         $(id).focus();
         currentCell = id;
     };
-    var solveGrid = function(e) {
-        let message = "";
+    var solveGrid = function (e) {
         // Check for solutions
-        let solutionCount = grid.solveGrid();
-        alert("Solution count: " + solutionCount);
-
+        // let solutionCount = grid.solveGrid();
+        // alert("Solution count: " + solutionCount);
+        return resetGrid(e);
+    };
+    var resetGrid = function (e) {
+        let message = "";
         if (killer) {
             let debug = false;
-            sudoku.initGrid('#numUpdates', debug, clearFormatting, clearColours);
+            sudoku.initGrid(
+                "#numUpdates",
+                debug,
+                clearFormatting,
+                clearColours,
+                showMessages
+            );
             Cage.initCage(sudoku);
             Cell.initCell(sudoku);
             message = grid.validateKiller();
@@ -198,7 +211,13 @@ $( document ).ready(function() {
             }
         } else {
             let debug = false;
-            sudoku.initGrid('#numUpdates', debug, clearFormatting, clearColours);
+            sudoku.initGrid(
+                "#numUpdates",
+                debug,
+                clearFormatting,
+                clearColours,
+                showMessages
+            );
             Cage.initCage(sudoku);
             Cell.initCell(sudoku);
             message = grid.validatePuzzle();
@@ -221,79 +240,87 @@ $( document ).ready(function() {
         } else {
             gridText = grid.getPuzzleText();
         }
-        $("#gridText").html("<pre>"+gridText+"</pre>");
+        $("#gridText").html("<pre>" + gridText + "</pre>");
     };
-    $('#clrGrid').on('click', function () {
+    $("#clrGrid").on("click", function () {
         clearGrid();
     });
-    $('#getPuzzle').on('click', function () {
+    $("#getPuzzle").on("click", function () {
         let puzzle = puzzles.getPuzzle();
         grid.setPuzzle(puzzle);
     });
-    $('#getKiller').on('click', function () {
+    $("#getKiller").on("click", function () {
         let killer = killers.getKiller();
         grid.setKiller(killer);
     });
-    $('#updatePossible').on('click', function (e) {
+    $("#updatePossible").on("click", function (e) {
         var row = Number(currentCell.substr(2, 1));
         var col = Number(currentCell.substr(3, 1));
-        let messages = sudoku.updateOtherPossible(row,col);
-        if (messages.length > 0) {
-            let message =messages.join("\n");
-            showError(message);
-        }
+        sudoku.updateOtherPossible(row, col);
     });
 
-    $('#nextUpdate').on('click', function() {
+    $("#nextUpdate").on("click", function () {
         sudoku.nextUpdate();
     });
-    $('#retryUpdate').on('click', function() {
+    $("#retryUpdate").on("click", function () {
         sudoku.retryUpdate();
     });
-    $('#finishUpdates').on('click', function() {
-        var limitString = $( "#limitUpdates" ).val();
-        var limit = Number( limitString );
-        sudoku.finishUpdates( limit );
+    $("#undoUpdate").on("click", function () {
+        // To undo must start from beginning and do one less than current updates
+        resetGrid();
+        var limitString = $("#limitUpdates").val();
+        var limit = Number(limitString);
+        sudoku.finishUpdates(limit - 1);
     });
-    $( '#testFindGroups').on('click', function() {
+    $("#resetUpdates").on("click", function () {
+        resetGrid();
+    });
+    $("#finishUpdates").on("click", function () {
+        var limitString = $("#limitUpdates").val();
+        var limit = Number(limitString);
+        sudoku.finishUpdates(limit);
+    });
+    $("#resetUpdates").on("click", function () {
+        resetGrid();
+    });
+    $("#testFindGroups").on("click", function () {
         sudoku.testFindGroups();
     });
 
-    $('#getGridText').on('click', function () {
+    $("#getGridText").on("click", function () {
         getGrid();
     });
 
-
-    var toggleControls = function() {
-        killer = $("#setKiller").prop('checked');
-        let sudoku = $("#setSudoku").prop('checked');
-        design = $("#setDesign").prop('checked');
-        let solve = $("#setSolve").prop('checked');
+    var toggleControls = function () {
+        killer = $("#setKiller").prop("checked");
+        let sudoku = $("#setSudoku").prop("checked");
+        design = $("#setDesign").prop("checked");
+        let solve = $("#setSolve").prop("checked");
         if (killer) {
-            $('.killer').show();
+            $(".killer").show();
             if (design) {
-                $('.design').show();
-                $('.solve').hide();
+                $(".design").show();
+                $(".solve").hide();
             }
             if (solve) {
-                $('.design').hide();
-                $('.solve').show();
+                $(".design").hide();
+                $(".solve").show();
             }
-            $('.sudoku').hide();
+            $(".sudoku").hide();
         }
         if (sudoku) {
-            $('.sudoku').show();
+            $(".sudoku").show();
             if (design) {
-                $('.design').show();
-                $('.solve').hide();
+                $(".design").show();
+                $(".solve").hide();
             }
             if (solve) {
-                $('.design').hide();
-                $('.solve').show();
+                $(".design").hide();
+                $(".solve").show();
             }
-            $('.killer').hide();
+            $(".killer").hide();
         }
-    }
+    };
 
     $("#setKiller").click(function () {
         toggleControls();
@@ -307,10 +334,10 @@ $( document ).ready(function() {
         toggleControls();
         clearGrid();
     });
-    $("#setSolve").on('click',function (e) {
+    $("#setSolve").on("click", function (e) {
         if (solveGrid(e)) {
             toggleControls();
-            $("#setValue").prop('checked', true);
+            $("#setValue").prop("checked", true);
             toggleManual();
             clearError();
             var id = cellId(1, 1);
@@ -322,9 +349,9 @@ $( document ).ready(function() {
     });
 
     var toggleManual = function () {
-        setValue = $("#setValue").prop('checked');
+        setValue = $("#setValue").prop("checked");
         // setPossible = $("#setPossible").prop('checked');
-    }
+    };
     $("#setValue").click(function () {
         toggleManual();
     });
@@ -332,10 +359,9 @@ $( document ).ready(function() {
         toggleManual();
     });
 
-    $("#setKiller").prop('checked', true);
-    $("#setDesign").prop('checked', true);
+    $("#setKiller").prop("checked", true);
+    $("#setDesign").prop("checked", true);
     toggleControls();
 
     clearGrid();
-
 });

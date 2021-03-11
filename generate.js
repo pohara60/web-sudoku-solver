@@ -1,34 +1,131 @@
-
-var puzzles = (function() {
-
+var puzzles = (function () {
     var nextPuzzle = 0;
     var getPuzzle = function () {
         var puzzles = [
             //[ ".........", ".........", ".........", ".........", ".........", ".........", ".........", ".........", "........." ],
-            [ "1...2....", ".6...852.", "28...97..", "...3...6.", ".5...69..", "....9..4.", "......6..", ".9.....57", "..6..7.89" ],
-            [ ".....123.", "123..8.4.", "8.4..765.", "765......", ".........", "......123", ".123..8.4", ".8.4..765", ".765....." ],
-            [ "7...48...", ".5.....24", ".....9..1", ".2.....5.", "3.9.5...6", "...47..3.", "....1..4.", "18....69.", "2..7....." ],
-            [ "7......4.", ".....827.", ".4.9.5...", "8.9..3...", "5.3...6.2", "...1..3.8", "...5.7.2.", ".564.....", ".9......3" ],
-            [ "...37....", "26.......", ".3.8...47", "9.3..7.1.", ".4.....3.", ".7.9..4.6", "51...2.7.", ".......21", "....18..." ],
-            [ "..4.5..2.", "3....97.6", "....78..3", ".15...8..", ".......5.", ".62...3..", "....17..5", "1....64.2", "..3.9..8." ],
-            [ "...43....", "..9.2.8..", ".....7.29", ".5....1.3", "..62.57..", "8.1....6.", "14.9.....", "..2.6.9..", "....43..." ],
-            [ "....9....", "...2.7..6", "...6.571.", ".2756..4.", "5..3...2.", ".84...6..", "..9..3..5", "..572...3", ".3....268" ],
-            [ "...9...21", "....358..", "....1..5.", ".6......9", "..27.43..", "5......1.", ".1..2....", "..615....", "78...6..." ],
-            [ "5....39..", "....6....", "..21...75", "7.....34.", "...2.7...", ".86.....7", "97...65..", "....5....", "..58....2" ],
+            [
+                "1...2....",
+                ".6...852.",
+                "28...97..",
+                "...3...6.",
+                ".5...69..",
+                "....9..4.",
+                "......6..",
+                ".9.....57",
+                "..6..7.89",
+            ],
+            [
+                ".....123.",
+                "123..8.4.",
+                "8.4..765.",
+                "765......",
+                ".........",
+                "......123",
+                ".123..8.4",
+                ".8.4..765",
+                ".765.....",
+            ],
+            [
+                "7...48...",
+                ".5.....24",
+                ".....9..1",
+                ".2.....5.",
+                "3.9.5...6",
+                "...47..3.",
+                "....1..4.",
+                "18....69.",
+                "2..7.....",
+            ],
+            [
+                "7......4.",
+                ".....827.",
+                ".4.9.5...",
+                "8.9..3...",
+                "5.3...6.2",
+                "...1..3.8",
+                "...5.7.2.",
+                ".564.....",
+                ".9......3",
+            ],
+            [
+                "...37....",
+                "26.......",
+                ".3.8...47",
+                "9.3..7.1.",
+                ".4.....3.",
+                ".7.9..4.6",
+                "51...2.7.",
+                ".......21",
+                "....18...",
+            ],
+            [
+                "..4.5..2.",
+                "3....97.6",
+                "....78..3",
+                ".15...8..",
+                ".......5.",
+                ".62...3..",
+                "....17..5",
+                "1....64.2",
+                "..3.9..8.",
+            ],
+            [
+                "...43....",
+                "..9.2.8..",
+                ".....7.29",
+                ".5....1.3",
+                "..62.57..",
+                "8.1....6.",
+                "14.9.....",
+                "..2.6.9..",
+                "....43...",
+            ],
+            [
+                "....9....",
+                "...2.7..6",
+                "...6.571.",
+                ".2756..4.",
+                "5..3...2.",
+                ".84...6..",
+                "..9..3..5",
+                "..572...3",
+                ".3....268",
+            ],
+            [
+                "...9...21",
+                "....358..",
+                "....1..5.",
+                ".6......9",
+                "..27.43..",
+                "5......1.",
+                ".1..2....",
+                "..615....",
+                "78...6...",
+            ],
+            [
+                "5....39..",
+                "....6....",
+                "..21...75",
+                "7.....34.",
+                "...2.7...",
+                ".86.....7",
+                "97...65..",
+                "....5....",
+                "..58....2",
+            ],
         ];
-        if( nextPuzzle >= puzzles.length ) {
+        if (nextPuzzle >= puzzles.length) {
             nextPuzzle = 0;
         }
         return puzzles[nextPuzzle++];
-    }
+    };
 
     return {
-        getPuzzle: getPuzzle
+        getPuzzle: getPuzzle,
     };
 })();
 
 var killers = (function () {
-
     var nextKiller = 0;
     var getKiller = function () {
         const L = "L";
@@ -37,7 +134,29 @@ var killers = (function () {
         const D = "D";
         var killers = [
             [
-                [15, L, 18, L, 22, L, 4, L, 20],
+                [10, L, 20, L, L, 11, L, L, 13],
+                [20, 21, U, 15, L, L, L, 22, U],
+                [U, U, L, L, 9, 22, L, U, L],
+                [U, L, 23, 11, U, 12, U, 12, L],
+                [21, 12, U, U, U, U, U, U, L],
+                [U, U, U, L, 18, L, 17, L, 20],
+                [U, 10, 12, L, U, 28, L, U, U],
+                [U, U, 9, L, R, U, 3, L, U],
+                [R, U, 20, L, L, L, 14, L, U],
+            ],
+            [
+                [24, L, L, 20, L, L, 24, L, 16],
+                [U, U, 10, L, 23, U, U, U, U],
+                [18, L, L, U, U, L, L, 14, U],
+                [19, L, U, 22, L, 20, L, U, U],
+                [U, 28, L, L, U, U, U, 10, L],
+                [U, 18, U, U, 8, 21, L, U, 27],
+                [R, U, 10, L, U, U, 4, U, U],
+                [U, 20, L, L, U, 16, U, 12, U],
+                [4, L, 17, L, L, U, L, U, U],
+            ],
+            [
+                ([15, L, 18, L, 22, L, 4, L, 20],
                 [U, U, 17, U, U, U, 15, L, U],
                 [25, L, U, 8, L, 8, L, U, U],
                 [U, U, 8, L, 17, 21, L, L, L],
@@ -45,7 +164,7 @@ var killers = (function () {
                 [15, 9, L, 19, 16, 16, U, U, U],
                 [U, 12, L, U, U, U, U, 9, L],
                 [U, 5, L, U, U, U, 27, L, L],
-                [12, L, 21, L, L, L, L, U, U]
+                [12, L, 21, L, L, L, L, U, U]),
             ],
             [
                 [14, L, 16, L, L, 6, L, 9, L],
@@ -91,9 +210,9 @@ var killers = (function () {
                 [U, U, 11, 25, L, 9, L, 14, U],
                 [R, U, U, U, U, L, U, U, U],
                 [9, L, U, 22, L, L, 16, 9, U],
-                [18, L, L, L, 10, L, U, U, L]
+                [18, L, L, L, 10, L, U, U, L],
             ],
-        /*
+            /*
                         [
                             [0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,10 +230,10 @@ var killers = (function () {
             nextKiller = 0;
         }
         return killers[nextKiller++];
-    }
+    };
 
     return {
-        getKiller: getKiller
+        getKiller: getKiller,
     };
 })();
 
@@ -124,14 +243,13 @@ var grid = (function () {
 
     var getGrid = function () {
         return theGrid;
-    }
+    };
 
     var cellId = function (row, col) {
         return "#g" + row + col;
-    }
+    };
 
     class Cell {
-
         constructor(row, col) {
             this.row = row;
             this.col = col;
@@ -140,13 +258,18 @@ var grid = (function () {
     }
 
     class Cage {
-
         static theGrid;
         static initCage(theGrid) {
             Cage.theGrid = theGrid;
         }
 
-        constructor(total, locations, virtual = false, nodups = true, source = "") {
+        constructor(
+            total,
+            locations,
+            virtual = false,
+            nodups = true,
+            source = ""
+        ) {
             this.total = total;
             this.cells = [];
             this.virtual = virtual;
@@ -154,7 +277,7 @@ var grid = (function () {
             this.source = source;
 
             // Get cage cells
-            locations.forEach(element => {
+            locations.forEach((element) => {
                 let cell = Cage.theGrid.cells[element[0] - 1][element[1] - 1];
                 this.cells.push(cell);
             });
@@ -165,7 +288,9 @@ var grid = (function () {
                 for (const cage of cages) {
                     if (cage.total != this.total) continue;
                     if (cage.cells.length != this.cells.length) continue;
-                    let difference = cage.cells.filter(x => !this.cells.includes(x));
+                    let difference = cage.cells.filter(
+                        (x) => !this.cells.includes(x)
+                    );
                     if (difference.length > 0) continue;
                     duplicate = cage;
                     // The cage will be a zombie
@@ -176,7 +301,7 @@ var grid = (function () {
             // Set cage for cells
             this.zombie = false;
             // Set cage for cells
-            this.cells.forEach(cell => {
+            this.cells.forEach((cell) => {
                 if (!virtual) {
                     cell.cage = this;
                 }
@@ -197,11 +322,11 @@ var grid = (function () {
         }
 
         remove() {
-            this.cells.forEach(cell => {
+            this.cells.forEach((cell) => {
                 cell.cage = null;
                 cell.value = null;
             });
-            Cage.theGrid.cages = Cage.theGrid.cages.filter(x => x != this);
+            Cage.theGrid.cages = Cage.theGrid.cages.filter((x) => x != this);
         }
     }
 
@@ -262,10 +387,12 @@ var grid = (function () {
                 for (let cell of cage.cells) {
                     adjacentCells.push(...this.adjacentCells(cell));
                 }
-                adjacentCells = adjacentCells.filter(n => !cage.cells.includes(n));
-                let adjacentCages = adjacentCells.map(x => x.cage);
-                adjacentCages = adjacentCages.filter(c => c != undefined);
-                let adjacentColours = adjacentCages.map(c => c.colour);
+                adjacentCells = adjacentCells.filter(
+                    (n) => !cage.cells.includes(n)
+                );
+                let adjacentCages = adjacentCells.map((x) => x.cage);
+                adjacentCages = adjacentCages.filter((c) => c != undefined);
+                let adjacentColours = adjacentCages.map((c) => c.colour);
                 cage.colour = 1;
                 while (adjacentColours.includes(cage.colour)) {
                     cage.colour++;
@@ -283,7 +410,7 @@ var grid = (function () {
 
         setCage(row, col, entry) {
             let cage = null;
-            if (["D","L","R","U"].includes(entry)) {
+            if (["D", "L", "R", "U"].includes(entry)) {
                 // Get cage from referenced cell
                 let r = row;
                 let c = col;
@@ -291,7 +418,7 @@ var grid = (function () {
                 if (entry == "L") c--;
                 if (entry == "R") c++;
                 if (entry == "U") r--;
-                if (r >=1 && r <= 9 && c >= 1 && c <= 9) {
+                if (r >= 1 && r <= 9 && c >= 1 && c <= 9) {
                     cage = this.cells[r - 1][c - 1].cage;
                     if (cage != undefined) {
                         let cell = this.cells[row - 1][col - 1];
@@ -307,12 +434,12 @@ var grid = (function () {
                 let cell = this.cells[row - 1][col - 1];
                 cage = cell.cage;
                 if (cage === undefined || cage == null) {
-                    cage = new Cage(value, [[row,col]]);
+                    cage = new Cage(value, [[row, col]]);
                     cell.value = value;
                     displayCell(cell);
                 } else if (cage.cells[0] === cell) {
                     // Can only update first cell of cage
-                    let newTotal = cage.total*10 + value;
+                    let newTotal = cage.total * 10 + value;
                     if (newTotal <= 90) {
                         cage.total = newTotal;
                         cell.value = newTotal;
@@ -356,18 +483,16 @@ var grid = (function () {
         // If killer then add cage value
         if (cell.cage != undefined) {
             if (cell.cage.cells[0] == cell) {
-                html = '<div class="cage">' + cell.cage.total + '</div>';
-            }
-            else {
-                html = '<div class="cage">' + cell.value + '</div>';
+                html = '<div class="cage">' + cell.cage.total + "</div>";
+            } else {
+                html = '<div class="cage">' + cell.value + "</div>";
             }
         } else {
             if (cell.value == null) {
                 var text = "";
-                html += '<div class="possible">' + text + '</div>';
-            }
-            else {
-                html += '<div class="known">' + cell.value + '</div>';
+                html += '<div class="possible">' + text + "</div>";
+            } else {
+                html += '<div class="known">' + cell.value + "</div>";
             }
         }
         $(id).html(html);
@@ -383,10 +508,9 @@ var grid = (function () {
                 $(id).addClass(colourClass);
             }
         }
-    }
+    };
 
     var setCell = function (row, col, entry) {
-
         if (!killer) {
             theGrid.setCell(row, col, entry);
         } else {
@@ -400,10 +524,9 @@ var grid = (function () {
         let cell = theGrid.cells[row - 1][col - 1];
         displayCell(cell);
         return cell;
-    }
+    };
 
     var removeCell = function (row, col) {
-
         if (!killer) {
             theGrid.clearCell(row, col);
         } else {
@@ -412,7 +535,7 @@ var grid = (function () {
         }
 
         displayCell(theGrid.cells[row - 1][col - 1]);
-    }
+    };
 
     var setPuzzle = function (puzzle) {
         initGrid(false);
@@ -424,12 +547,12 @@ var grid = (function () {
                 }
             }
         }
-    }
+    };
 
     var getPuzzle = function () {
         let puzzle = new Array(9);
         for (let row = 1; row < 10; row++) {
-            puzzle[row-1] = new Array(9);
+            puzzle[row - 1] = new Array(9);
             for (let col = 1; col < 10; col++) {
                 let entry = theGrid.cells[row - 1][col - 1].value;
                 if (entry == null) entry = ".";
@@ -437,7 +560,7 @@ var grid = (function () {
             }
         }
         return puzzle;
-    }
+    };
 
     var validatePuzzle = function () {
         let message = "";
@@ -449,7 +572,11 @@ var grid = (function () {
                 let cell = row[c - 1];
                 if (cell.value != null) {
                     if (set[cell.value - 1]) {
-                        message += "\nRow[" + r + "] has duplicate value " + cell.value;
+                        message +=
+                            "\nRow[" +
+                            r +
+                            "] has duplicate value " +
+                            cell.value;
                     } else {
                         set[cell.value - 1] = true;
                     }
@@ -462,7 +589,11 @@ var grid = (function () {
                 let cell = theGrid.cells[r - 1][c - 1];
                 if (cell.value != null) {
                     if (set[cell.value - 1]) {
-                        message += "\nCol[" + c + "] has duplicate value " + cell.value;
+                        message +=
+                            "\nCol[" +
+                            c +
+                            "] has duplicate value " +
+                            cell.value;
                     } else {
                         set[cell.value - 1] = true;
                     }
@@ -478,7 +609,13 @@ var grid = (function () {
                         let cell = theGrid.cells[r - 1][c - 1];
                         if (cell.value != null) {
                             if (set[cell.value - 1]) {
-                                message += "\nSquare[" + row + "," + col + "] has duplicate value " + cell.value;
+                                message +=
+                                    "\nSquare[" +
+                                    row +
+                                    "," +
+                                    col +
+                                    "] has duplicate value " +
+                                    cell.value;
                             } else {
                                 set[cell.value - 1] = true;
                                 count++;
@@ -489,13 +626,15 @@ var grid = (function () {
             }
         }
         if (count < 17) {
-            message += "\nNeed at least 17 values for unique solution, only have " + count;
+            message +=
+                "\nNeed at least 17 values for unique solution, only have " +
+                count;
         }
         if (message != "") {
             message = "INVALID PUZZLE" + message;
         }
         return message;
-    }
+    };
 
     var getPuzzleText = function () {
         let puzzle = getPuzzle();
@@ -503,23 +642,23 @@ var grid = (function () {
         for (let row = 1; row < 10; row++) {
             let rowText = puzzle[row - 1].toString().split(",").join("");
             text += '"' + rowText + '"';
-            if( row < 9) {
+            if (row < 9) {
                 text += ",<br> ";
             } else {
                 text += "]";
             }
         }
         return text;
-    }
+    };
 
-    var setKiller = function(killerGrid) {
+    var setKiller = function (killerGrid) {
         initGrid(true);
         let retryLocations = [];
         for (var row = 1; row < 10; row++) {
             for (var col = 1; col < 10; col++) {
-                let cage = setCell(row, col, killerGrid[row-1][col-1]);
+                let cage = setCell(row, col, killerGrid[row - 1][col - 1]);
                 if (cage == null) {
-                    retryLocations.push([row,col]);
+                    retryLocations.push([row, col]);
                 }
             }
         }
@@ -539,24 +678,25 @@ var grid = (function () {
             }
             retryLocations = retry2;
         }
-    }
+    };
 
     var getKillerGrid = function () {
         let killerGrid = new Array(9);
         for (var row = 1; row < 10; row++) {
             killerGrid[row - 1] = new Array(9);
             for (var col = 1; col < 10; col++) {
-                killerGrid[row - 1][col - 1] = theGrid.cells[row - 1][col - 1].value;
+                killerGrid[row - 1][col - 1] =
+                    theGrid.cells[row - 1][col - 1].value;
             }
         }
         return killerGrid;
-    }
+    };
 
     var getKiller = function () {
         let killerGrid = getKillerGrid();
         let killer = gridToKiller(killerGrid);
         return killer;
-    }
+    };
 
     var getKillerText = function () {
         let killerGrid = getKillerGrid();
@@ -571,7 +711,7 @@ var grid = (function () {
             }
         }
         return text;
-    }
+    };
 
     var validateKiller = function () {
         let message = "";
@@ -581,7 +721,7 @@ var grid = (function () {
             for (let c = 1; c <= 9; c++) {
                 let cell = row[c - 1];
                 if (cell.cage == undefined || cell.cage == null) {
-                    message += "\nCell["+r+","+c+"] is not in a cage";
+                    message += "\nCell[" + r + "," + c + "] is not in a cage";
                 }
             }
         }
@@ -590,14 +730,15 @@ var grid = (function () {
         for (const cage of theGrid.cages) {
             total += cage.total;
         }
-        if (total != 45*9) {
-            message = "\nCage total is "+total+", should be "+(45*9)+message;
+        if (total != 45 * 9) {
+            message =
+                "\nCage total is " + total + ", should be " + 45 * 9 + message;
         }
         if (message != "") {
             message = "INVALID KILLER" + message;
         }
         return message;
-    }
+    };
 
     var addCellToKiller = function (killerSpec, r, c, cells) {
         cells.push([r, c]);
@@ -615,7 +756,7 @@ var grid = (function () {
         if (r - 1 >= 1 && killerSpec[r - 2][c - 1] == "D") {
             addCellToKiller(killerSpec, r + 1, c, cells);
         }
-    }
+    };
 
     var gridToKiller = function (killerSpec) {
         let killer = [];
@@ -626,17 +767,24 @@ var grid = (function () {
                 for (let c = 1; c <= 9; c++) {
                     let value = row[c - 1];
                     // new cage starts with a non-zero number
-                    if (typeof (value) == "number" && value != 0) {
+                    if (typeof value == "number" && value != 0) {
                         let total = value;
                         let cells = [];
                         addCellToKiller(killerSpec, r, c, cells);
                         let cage = {
                             total: total,
-                            cells: cells
-                        }
+                            cells: cells,
+                        };
                         killer.push(cage);
                     } else if (!["L", "R", "U", "D"].includes(value)) {
-                        alert("Cell[" + r + "," + c + "] has invalid value " + value);
+                        alert(
+                            "Cell[" +
+                                r +
+                                "," +
+                                c +
+                                "] has invalid value " +
+                                value
+                        );
                     }
                 }
             }
@@ -644,7 +792,7 @@ var grid = (function () {
             killer = killerSpec;
         }
         return killer;
-    }
+    };
 
     var getSquare = function (irow, icol) {
         var cells = [];
@@ -656,7 +804,7 @@ var grid = (function () {
             }
         }
         return cells;
-    }
+    };
 
     var getRow = function (row) {
         var r = row;
@@ -665,7 +813,7 @@ var grid = (function () {
             cells.push(theGrid.cells[r - 1][c - 1]);
         }
         return cells;
-    }
+    };
 
     var getColumn = function (col) {
         var c = col;
@@ -674,18 +822,19 @@ var grid = (function () {
             cells.push(theGrid.cells[r - 1][c - 1]);
         }
         return cells;
-    }
+    };
 
     var cellsInNonet = function (cells) {
         let cell = cells[0];
         let rowCells = getRow(cell.row);
-        if (cells.filter(x => !rowCells.includes(x)).length == 0) return true;
+        if (cells.filter((x) => !rowCells.includes(x)).length == 0) return true;
         let colCells = getColumn(cell.col);
-        if (cells.filter(x => !colCells.includes(x)).length == 0) return true;
+        if (cells.filter((x) => !colCells.includes(x)).length == 0) return true;
         let squareCells = getSquare(cell.row, cell.col);
-        if (cells.filter(x => !squareCells.includes(x)).length == 0) return true;
+        if (cells.filter((x) => !squareCells.includes(x)).length == 0)
+            return true;
         return false;
-    }
+    };
 
     var addVirtualCage = function (cells, source) {
         if (typeof cells == "undefined" || cells == null || cells.length == 0) {
@@ -704,10 +853,14 @@ var grid = (function () {
             const cell = cells[index];
             if (!unionCells.includes(cell)) {
                 let cage = cell.cage;
-                if (typeof cage == "undefined" || cage == null || cage.cells.length == 0) {
+                if (
+                    typeof cage == "undefined" ||
+                    cage == null ||
+                    cage.cells.length == 0
+                ) {
                     alert("Cage not valid: " + cage);
                 }
-                let difference = cage.cells.filter(x => !cells.includes(x));
+                let difference = cage.cells.filter((x) => !cells.includes(x));
                 if (difference.length > 0) {
                     // Add the cell to the new cage
                     newCells.push(cell);
@@ -717,15 +870,14 @@ var grid = (function () {
                     for (const otherCell of difference) {
                         if (!otherCells.includes(otherCell)) {
                             otherCells.push(otherCell);
-                            otherLocations.push([otherCell.row, otherCell.col])
+                            otherLocations.push([otherCell.row, otherCell.col]);
                             if (firstOtherCellForCage) {
                                 firstOtherCellForCage = false;
                                 otherCagesTotal += cell.cage.total;
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     newTotal -= cage.total;
                     unionCells.push(...cage.cells);
                 }
@@ -735,25 +887,38 @@ var grid = (function () {
             // If the cage is in a nonet, then it does not allow duplicates
             const maxCageLength = 5;
             if (newLocations.length <= maxCageLength) {
-                let nodups = cellsInNonet(newCells)
-                let newCage = new Cage(newTotal, newLocations, true, nodups, source);
+                let nodups = cellsInNonet(newCells);
+                let newCage = new Cage(
+                    newTotal,
+                    newLocations,
+                    true,
+                    nodups,
+                    source
+                );
             }
             if (otherLocations.length <= maxCageLength) {
-                let nodups = cellsInNonet(otherCells)
+                let nodups = cellsInNonet(otherCells);
                 let otherTotal = otherCagesTotal - newTotal;
-                let otherCage = new Cage(otherTotal, otherLocations, true, nodups, source + " x");
+                let otherCage = new Cage(
+                    otherTotal,
+                    otherLocations,
+                    true,
+                    nodups,
+                    source + " x"
+                );
             }
         }
-    }
+    };
 
-    var addVirtualCages = function() {
+    var addVirtualCages = function () {
         for (let size = 1; size <= 5; size++) {
             for (let r = 1; r <= 10 - size; r++) {
                 let cells = [];
                 for (let r2 = r; r2 < r + size; r2++) {
                     cells.push(...getRow(r2));
                 }
-                let source = size == 1 ? "row " + r : "rows " + r + "-" + (r + size - 1);
+                let source =
+                    size == 1 ? "row " + r : "rows " + r + "-" + (r + size - 1);
                 addVirtualCage(cells, source);
             }
         }
@@ -763,7 +928,8 @@ var grid = (function () {
                 for (let c2 = c; c2 < c + size; c2++) {
                     cells.push(...getColumn(c2));
                 }
-                let source = size == 1 ? "col " + c : "cols " + c + "-" + (c + size - 1);
+                let source =
+                    size == 1 ? "col " + c : "cols " + c + "-" + (c + size - 1);
                 addVirtualCage(cells, source);
             }
         }
@@ -781,31 +947,36 @@ var grid = (function () {
                             let cells = [];
                             cells.push(...getSquare(r, c));
                             cells.push(...getSquare(r + 3, c));
-                            let source = "sqrs " + r + "," + c + "-" + (r + 3) + "," + c;
+                            let source =
+                                "sqrs " + r + "," + c + "-" + (r + 3) + "," + c;
                             addVirtualCage(cells, source);
                         }
                         if (c < 6) {
                             let cells = [];
                             cells.push(...getSquare(r, c));
                             cells.push(...getSquare(r, c + 3));
-                            let source = "sqrs " + r + "," + c + "-" + r + "," + (c + 3);
+                            let source =
+                                "sqrs " + r + "," + c + "-" + r + "," + (c + 3);
                             addVirtualCage(cells, source);
                         }
                     }
                 }
             }
         }
-    }
+    };
 
     var backtrackCount;
 
     var solveGrid = function () {
         // Copy grid to solution
-        let solution = new Array(9);        
+        let solution = new Array(9);
         for (var row = 1; row < 10; row++) {
             solution[row - 1] = new Array(9);
             for (var col = 1; col < 10; col++) {
-                let scell = { cell: theGrid.cells[row - 1][col - 1], value: null };
+                let scell = {
+                    cell: theGrid.cells[row - 1][col - 1],
+                    value: null,
+                };
                 solution[row - 1][col - 1] = scell;
                 let value = scell.cell.value;
                 let cage = scell.cell.cage;
@@ -819,26 +990,38 @@ var grid = (function () {
         }
         // Get list of solution cells in order of possible values
         let solutionList = [].concat.apply([], solution);
-        solutionList.map( scell => scell.countPossible = solutionPossibleValues(solution,scell).filter(v => v).length);
-        solutionList.sort((a,b) => {
+        solutionList.map(
+            (scell) =>
+                (scell.countPossible = solutionPossibleValues(
+                    solution,
+                    scell
+                ).filter((v) => v).length)
+        );
+        solutionList.sort((a, b) => {
             if (a.countPossible == b.countPossible) {
                 // Prefer element with value set
                 if (a.value != null) return -1;
                 if (b.value != null) return 1;
             }
-            return (a.countPossible - b.countPossible);
+            return a.countPossible - b.countPossible;
         });
         // Recursively backtrack over solution list - skip known values at start of list
-        let index = solutionList.filter( scell => scell.value != null).length;
+        let index = solutionList.filter((scell) => scell.value != null).length;
         let t0 = performance.now();
         backtrackCount = 0;
-        let solutionCount = backtrack( solution, solutionList, 0);
+        let solutionCount = backtrack(solution, solutionList, 0);
         let t1 = performance.now();
-        console.log("Backtrack took " + (t1 - t0) + " milliseconds to backtrack " + backtrackCount + " times");
+        console.log(
+            "Backtrack took " +
+                (t1 - t0) +
+                " milliseconds to backtrack " +
+                backtrackCount +
+                " times"
+        );
         return solutionCount;
-    }
+    };
 
-    var solutionPossibleValues = function(solution, scell) {
+    var solutionPossibleValues = function (solution, scell) {
         let row = scell.cell.row;
         let col = scell.cell.col;
         let possible = new Array(9);
@@ -876,7 +1059,6 @@ var grid = (function () {
                         if (value != null) {
                             if (cage.nodups) possible[value - 1] = false;
                             total -= value;
-                        
                         } else {
                             //if (cell.row != row || cell.col != col) {
                             //    total -= minimum;
@@ -889,9 +1071,9 @@ var grid = (function () {
                     //    possible[value - 1] = false;
                     //}
                     if (cage.nodups) {
-                        let cagePossible = cacheTotalPossible(total,count);
+                        let cagePossible = cacheTotalPossible(total, count);
                         for (let value = 1; value < 10; value++) {
-                            if (!cagePossible[value-1]) {
+                            if (!cagePossible[value - 1]) {
                                 possible[value - 1] = false;
                             }
                         }
@@ -902,7 +1084,7 @@ var grid = (function () {
             possible[scell.value - 1] = true;
         }
         return possible;
-    }
+    };
 
     var cacheTotalPossible = function (total, length) {
         if (this.cache == undefined) {
@@ -913,9 +1095,9 @@ var grid = (function () {
             return this.cache.get(key);
         }
         let possible = findTotalPossible(total, length);
-        this.cache.set(key,possible);
+        this.cache.set(key, possible);
         return possible;
-    }
+    };
 
     var findTotalPossible = function (total, length) {
         let setValues = [];
@@ -924,17 +1106,17 @@ var grid = (function () {
         let possible = new Array(9);
         for (const combination of combinations) {
             for (const value of combination) {
-                possible[value-1] = true;
+                possible[value - 1] = true;
             }
         }
         return possible;
-    }
+    };
 
     var findTotalCombinations = function (total, length, setValues) {
         let newCombinations = [];
         // Want unique combinations, so start at highest value
-        let last = setValues.length == 0 ? 0 : setValues[setValues.length-1];
-        for (let value = last+1; value < 10; value++) {
+        let last = setValues.length == 0 ? 0 : setValues[setValues.length - 1];
+        for (let value = last + 1; value < 10; value++) {
             if (!setValues.includes(value)) {
                 if (length == 1) {
                     if (total == value) {
@@ -942,18 +1124,21 @@ var grid = (function () {
                         newCombinations.push(setValues);
                         break;
                     }
-                }
-                else if (total > value) {
+                } else if (total > value) {
                     // find combinations for reduced total in remaining cells
-                    let combinations = findTotalCombinations(total - value, length - 1, setValues.concat(value));
+                    let combinations = findTotalCombinations(
+                        total - value,
+                        length - 1,
+                        setValues.concat(value)
+                    );
                     newCombinations.push(...combinations);
                 }
             }
         }
         return newCombinations;
-    }
+    };
 
-    var backtrack = function(solution, solutionList, index) {
+    var backtrack = function (solution, solutionList, index) {
         backtrackCount++;
 
         // Try each possible value of solution[row,col]
@@ -962,16 +1147,19 @@ var grid = (function () {
         let solutionCount = 0;
         let impossible = true;
         let possible = solutionPossibleValues(solution, scell);
-        for (let value = 1; value <=9; value++) {
-            if (possible[value-1]) {
+        for (let value = 1; value <= 9; value++) {
+            if (possible[value - 1]) {
                 scell.value = value;
-                impossible  = false;
-                if (index+1 >= solutionList.length) {
+                impossible = false;
+                if (index + 1 >= solutionList.length) {
                     // Solution!
                     solutionCount++;
-                }
-                else {
-                    solutionCount += backtrack(solution, solutionList, index+1);
+                } else {
+                    solutionCount += backtrack(
+                        solution,
+                        solutionList,
+                        index + 1
+                    );
                 }
             }
         }
@@ -980,7 +1168,7 @@ var grid = (function () {
         }
         scell.value = startValue;
         return solutionCount;
-    }
+    };
 
     return {
         initGrid: initGrid,
