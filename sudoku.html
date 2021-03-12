@@ -51,15 +51,16 @@
 	</div>
 
 	<div class="container solve mt-3">
-		<label>Manual Input Mode:</label>
+		<h4>Manual Solution</h4>
+		<label>Input Mode:</label>
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-primary active">
-				<input type="radio" name="manualOptions" id="setValue" autocomplete="off" checked data-toggle="tooltip"
-					data-placement="top" title="Set cell value (shortcut V)">Set Value
+			<label class="btn btn-primary active" data-toggle="tooltip" data-placement="bottom"
+				title="Set cell value (shortcut V)">
+				<input type="radio" name="manualOptions" id="setValue" autocomplete="off" checked>Set Value
 			</label>
-			<label class="btn btn-primary">
-				<input type="radio" name="manualOptions" id="setPossible" autocomplete="off" data-toggle="tooltip"
-					data-placement="top" title="Toggle cell possible value (shortcut P)">Toggle Possible
+			<label class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
+				title="Toggle cell possible value (shortcut P)">
+				<input type="radio" name="manualOptions" id="setPossible" autocomplete="off">Toggle Possible
 			</label>
 		</div>
 	</div>
@@ -255,27 +256,24 @@
 	<div style="clear:both;"></div>
 
 	<div class="container solve mt-3">
+		<h4>Automatic Solution</h4>
 		<button id="nextUpdate" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
 			title="Automatically update next cell (shortcut N)">Next</button>
 		<button id="retryUpdate" type="button" class="btn btn-primary">Retry</button>
 		<button id="undoUpdate" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom"
 			title="Undo last uodate">Undo</button>
 		<form class="form-inline mt-1">
-			<div class="form-group mb-2">
+			<div class="form-inline mb-2">
 				<label for="limitUpdates">Limit Updates:</label>
 				<input type="number" class="form-control" id="limitUpdates" size="1">
 			</div>
-			<button id="finishUpdates" type="button" class="btn btn-primary mb-2" data-toggle="tooltip"
+			<button id="finishUpdates" type="button" class="btn btn-primary mb-2 ml-2" data-toggle="tooltip"
 				data-placement="bottom" title="Do Limit Updates if specified, or Finish ">Finish</button>
-			<button id="resetUpdates" type="button" class="btn btn-primary mb-2" data-toggle="tooltip"
-				data-placement="bottom" title="Reset solution to start">Reset</button>
-		</form>
-	</div>
-	<div class="container solve mt-1">
-		<form class="form-inline">
-			<div class="form-group mb-2">
+			<button id="resetUpdates" type="button" class="btn btn-primary mb-2 ml-2" data-toggle="tooltip"
+				data-placement="top" title="Reset solution to start">Reset</button>
+			<div class="form-inline mb-2 ml-2">
 				<label for="numUpdates">Number of Updates:</label>
-				<input type="text" readonly class="form-control-plaintext" id="numUpdates" value="0" size="1">
+				<input type="number" readonly class="form-control" id="numUpdates" value="0" size="1">
 			</div>
 		</form>
 	</div>

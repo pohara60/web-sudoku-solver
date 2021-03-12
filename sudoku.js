@@ -1076,7 +1076,7 @@ var sudoku = (function sudoku() {
                 if (value != null) {
                     if (values[value - 1]) {
                         errors.push(c);
-                        messages.push(location + ", Duplicate value " + value);
+                        messages.push(location + ", duplicate value " + value);
                     } else {
                         values[value - 1] = true;
                     }
@@ -1084,7 +1084,11 @@ var sudoku = (function sudoku() {
                     if (c.remove(cell.value)) {
                         updates.push(c);
                         messages.push(
-                            location + ", Remove value " + value + " from " + c
+                            location +
+                                ", remove value " +
+                                cell.value +
+                                " from " +
+                                c
                         );
                     }
                 }
@@ -1238,7 +1242,8 @@ var sudoku = (function sudoku() {
         clearFormatting();
 
         var update = false;
-        let explanation = "User update possible " + cell.location();
+        //let explanation = "User update possible " + cell.location();
+        let explanation = ""; // Do not need this text because visible in UI
         let union = cellUpdateOtherPossible(cell, explanation);
 
         // If killer then update cage
