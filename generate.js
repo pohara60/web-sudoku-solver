@@ -134,6 +134,17 @@ var killers = (function () {
         const D = "D";
         var killers = [
             [
+                [8, L, 13, L, 18, L, L, 20, L],
+                [21, L, 14, L, L, 17, U, U, U],
+                [U, U, 23, L, R, U, 25, 18, 12],
+                [20, L, U, 15, U, R, U, U, U],
+                [U, U, 19, U, 10, 19, U, U, L],
+                [R, R, U, U, U, U, 15, L, L],
+                [13, 21, L, U, 20, U, 14, L, U],
+                [U, U, 10, L, U, L, L, U, L],
+                [U, U, 18, L, L, 6, L, 16, L],
+            ],
+            [
                 [10, L, 20, L, L, 11, L, L, 13],
                 [20, 21, U, 15, L, L, L, 22, U],
                 [U, U, L, L, 9, 22, L, U, L],
