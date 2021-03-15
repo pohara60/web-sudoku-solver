@@ -212,6 +212,7 @@ class Cage {
             );
             error = true;
         }
+        return error;
     }
 
     static addVirtualCage(cells, source) {

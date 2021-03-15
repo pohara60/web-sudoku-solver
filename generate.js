@@ -167,7 +167,7 @@ var killers = (function () {
                 [4, L, 17, L, L, U, L, U, U],
             ],
             [
-                ([15, L, 18, L, 22, L, 4, L, 20],
+                [15, L, 18, L, 22, L, 4, L, 20],
                 [U, U, 17, U, U, U, 15, L, U],
                 [25, L, U, 8, L, 8, L, U, U],
                 [U, U, 8, L, 17, 21, L, L, L],
@@ -175,7 +175,7 @@ var killers = (function () {
                 [15, 9, L, 19, 16, 16, U, U, U],
                 [U, 12, L, U, U, U, U, 9, L],
                 [U, 5, L, U, U, U, 27, L, L],
-                [12, L, 21, L, L, L, L, U, U]),
+                [12, L, 21, L, L, L, L, U, U],
             ],
             [
                 [14, L, 16, L, L, 6, L, 9, L],
@@ -266,6 +266,9 @@ var grid = (function () {
             this.col = col;
             this.value = undefined;
         }
+        toString() {
+            return "cell[" + this.row + "," + this.col + "]";
+        }
     }
 
     class Cage {
@@ -338,6 +341,25 @@ var grid = (function () {
                 cell.value = null;
             });
             Cage.theGrid.cages = Cage.theGrid.cages.filter((x) => x != this);
+        }
+
+        toString() {
+            var text =
+                String(this.total) +
+                "[" +
+                this.cells.length +
+                "]" +
+                (this.virtual ? "v" : "r") +
+                (this.nodups ? "u" : "d") +
+                ": ";
+            var cellText = this.cells
+                .map((cell) => "[" + cell.row + "," + cell.col + "]")
+                .join(",");
+            text += cellText;
+            if (this.source != "") {
+                text += " (" + this.source + ")";
+            }
+            return text;
         }
     }
 
@@ -869,7 +891,8 @@ var grid = (function () {
                     cage == null ||
                     cage.cells.length == 0
                 ) {
-                    alert("Cage not valid: " + cage);
+                    alert("Cage not valid for " + cell);
+                    return false;
                 }
                 let difference = cage.cells.filter((x) => !cells.includes(x));
                 if (difference.length > 0) {
@@ -919,6 +942,7 @@ var grid = (function () {
                 );
             }
         }
+        return true;
     };
 
     var addVirtualCages = function () {
@@ -930,7 +954,7 @@ var grid = (function () {
                 }
                 let source =
                     size == 1 ? "row " + r : "rows " + r + "-" + (r + size - 1);
-                addVirtualCage(cells, source);
+                if (!addVirtualCage(cells, source)) return false;
             }
         }
         for (let size = 1; size <= 5; size++) {
@@ -941,7 +965,7 @@ var grid = (function () {
                 }
                 let source =
                     size == 1 ? "col " + c : "cols " + c + "-" + (c + size - 1);
-                addVirtualCage(cells, source);
+                if (!addVirtualCage(cells, source)) return false;
             }
         }
         for (let size = 1; size <= 2; size++) {
@@ -951,7 +975,7 @@ var grid = (function () {
                         let cells = [];
                         cells.push(...getSquare(r, c));
                         let source = "sqr " + r + "," + c;
-                        addVirtualCage(cells, source);
+                        if (!addVirtualCage(cells, source)) return false;
                     }
                     if (size == 2) {
                         if (r < 6) {
@@ -960,7 +984,7 @@ var grid = (function () {
                             cells.push(...getSquare(r + 3, c));
                             let source =
                                 "sqrs " + r + "," + c + "-" + (r + 3) + "," + c;
-                            addVirtualCage(cells, source);
+                            if (!addVirtualCage(cells, source)) return false;
                         }
                         if (c < 6) {
                             let cells = [];
@@ -968,12 +992,13 @@ var grid = (function () {
                             cells.push(...getSquare(r, c + 3));
                             let source =
                                 "sqrs " + r + "," + c + "-" + r + "," + (c + 3);
-                            addVirtualCage(cells, source);
+                            if (!addVirtualCage(cells, source)) return false;
                         }
                     }
                 }
             }
         }
+        return true;
     };
 
     var backtrackCount;
@@ -997,7 +1022,7 @@ var grid = (function () {
         }
         // Add virtual cages for killer
         if (killer) {
-            addVirtualCages();
+            if (!addVirtualCages()) return 0;
         }
         // Get list of solution cells in order of possible values
         let solutionList = [].concat.apply([], solution);

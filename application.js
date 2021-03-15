@@ -12,9 +12,9 @@ $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-    window.alert = function () {
-        debugger;
-    };
+    // window.alert = function () {
+    //     //debugger;
+    // };
 
     var clearFormatting = function () {
         // Undo formatting
@@ -186,6 +186,21 @@ $(document).ready(function () {
         $(id).focus();
         currentCell = id;
     };
+    var validateGrid = function () {
+        if (killer) {
+            message = grid.validateKiller();
+        } else {
+            message = grid.validatePuzzle();
+        }
+        if (message != "") {
+            alert(message);
+            return false;
+        }
+        // Check for solutions
+        let solutionCount = grid.solveGrid();
+        alert("Solution count: " + solutionCount);
+        return solutionCount == 1;
+    };
     var solveGrid = function (e) {
         // Check for solutions
         // let solutionCount = grid.solveGrid();
@@ -253,6 +268,9 @@ $(document).ready(function () {
     $("#getKiller").on("click", function () {
         let killer = killers.getKiller();
         grid.setKiller(killer);
+    });
+    $("#validate").on("click", function () {
+        validateGrid();
     });
     $("#updatePossible").on("click", function (e) {
         var row = Number(currentCell.substr(2, 1));

@@ -1311,7 +1311,7 @@ var sudoku = (function sudoku() {
             let newCage = new Cage(cage.total, cage.cells);
         }
 
-        Cage.validateCages();
+        if (Cage.validateCages()) return;
 
         initDisplay();
         Cage.colourCages();
