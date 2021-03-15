@@ -1248,6 +1248,9 @@ var sudoku = (function sudoku() {
 
         // If killer then update cage
         if (cell.cage) {
+            for (let cage of cell.cages) {
+                union = unionUpdates(union, updateCage(cage, explanation));
+            }
         }
 
         // Format update

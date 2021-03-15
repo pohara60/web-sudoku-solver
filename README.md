@@ -3,7 +3,7 @@
 ## Introduction
 
 The application let's the user Create Sudoku and Killer Sudoku puzzles, and invoke an automatic solver.
-_The user may also manually solve simple Sudoku puzzles, but there is limited validation._
+_The user may also manually solve puzzles, but there is limited validation._
 
 ## Creation
 
@@ -101,14 +101,13 @@ The user may update cell values and possible values.
 
 There is some support for automating possible values:
 
--   The Update button updates the possible values for cells linked to the current cell.
+-   The Update button updates the possible values for cells (and cages) linked to the current cell.
 -   Backspace adds the deleted value to possible values for cells linked to the current cell.
 
-_There is no automation of Killer Sudoku cage possible values._
+_There is limited automation of Killer Sudoku cage possible values._
 
 ## To Do
 
-1. Improve manual solution.
 2. Let the user paste in puzzle text, so they can re-enter previously saved puzzles.
 3. Generate new puzzles, rather than just have hard-coded puzzles.
 4. Analyze puzzles for degree of difficulty.

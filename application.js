@@ -39,7 +39,7 @@ $(document).ready(function () {
         $(td).addClass("highlight");
         e.stopPropagation();
         let id = $(td).attr("id");
-        currentCell = id;
+        currentCell = "#" + id;
     };
 
     var showMessages = function (messages) {
@@ -59,7 +59,7 @@ $(document).ready(function () {
         var row = Number(id.substr(1, 1));
         var col = Number(id.substr(2, 1));
         var code = e.which;
-        console.log("Keydown: key=" + e.key);
+        // console.log("Keydown: key=" + e.key);
         // Navigation
         if (code >= 37 && code <= 40) {
             if (code == 37) {
